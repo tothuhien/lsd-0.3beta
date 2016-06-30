@@ -32,7 +32,7 @@ Example of Input_tree_file format (newick, can be either binary or polytomy)
 
 Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
 
-  4			# number of temporal constraints
+  5			# number of temporal constraints
   
   a 1999		# the date of a is 1999
   
