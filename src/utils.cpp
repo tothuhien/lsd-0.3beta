@@ -464,6 +464,7 @@ Node** unrooted2rooted(Pr* pr,Node** nodes,int s){
     pr->nbINodes+=1;
     pr->nbBranches+=1;
     shiftInternalConstraints(pr);
+    computeSuc_polytomy(pr,nodes_new);
     return nodes_new;
 }
 
@@ -489,6 +490,7 @@ Node** unrooted2rootedS(Pr* pr,Node** nodes,int s){//simplier version, use only 
     nodes_new[1]->P=0;
     pr->nbINodes+=1;
     pr->nbBranches+=1;
+    computeSuc_polytomy(pr,nodes_new);
     return nodes_new;
 }
 
