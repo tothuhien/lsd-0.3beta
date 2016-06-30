@@ -12,7 +12,7 @@ How to Run LSD:
 
 	After compiling the program, you have the lsd executable file in the src folder, then run it from a terminal. You can also use the binary files in the bin folder but sometimes it might not work on some computers that have different configuration as the machine compiled them. From the directory that contains the executable file:
 	
-		if you want to use use the interface, type ./lsd
+		if you want to use the interface, type ./lsd
 		
 		if you want to use the command line, type ./lsd -i <"input_tree_file"> -d <"input_date_file"> (to estimate absolute dates)
 		
@@ -22,7 +22,61 @@ How to Run LSD:
 
 Some examples:
 
-1) Examples of command line:
+1) Examples of input files:
+
+Example of Input_tree_file format (newick, can be either binary or polytomy)
+
+((a:0.12,d:0.12):0.3,(b:0.3,c:0.5):0.4);
+
+((a:0.12,b:0.3):0.7,(c:0.5,d:0.8):0.1);
+
+Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
+
+  4			# number of temporal constraints
+  
+  a 1999		# the date of a is 1999
+  
+  b 2000		# the date of b is 2000
+  
+  c l(1990)		# the date of c is at least 1990
+  
+  mrca(a,b,c) u(2000)	# the date of the most recent ancestor of a,b, and c is at most 2000
+  
+  d b(1998,2000)	# the date of d is between 1998 and 2000
+
+You can also define the labels for internal nodes and use them to define their temporal constraints.
+
+For example you have an input tree: ((a:0.12,d:0.12)n1:0.3,(b:0.3,c:0.5)n2:0.4)root;
+
+You can have an input date file as follows:
+
+  5
+  
+  a 2000
+  
+  n1 l(2001)
+  
+  c b(2001,2004)
+  
+  n2 u(2003)
+  
+  root b(1998,1999)
+
+Example of Outgroup_file format:
+
+	2
+	
+	outgroup1
+	
+	outgroup2
+
+Example of given_rate_file format:
+
+	0.0068
+	
+	0.0052
+	
+2) Examples of command line:
 
 for rooted tree, constrained mode, and using variances
 
@@ -57,59 +111,7 @@ for rooted tree, estimating relative dates with date root=0 and date of all leav
 ./lsd -i tree_file -c -v 1 -a 0 -z 1
 
 
-2) Examples of input files:
 
-Example of Input_tree_file format (newick, can be either binary or polytomy)
-
-((a:0.12,d:0.12):0.3,(b:0.3,c:0.5):0.4);
-
-((a:0.12,b:0.3):0.7,(c:0.5,d:0.8):0.1);
-
-Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
-
-  4                     # number of temporal constraints
-  
-  a 1999                # the date of a is 1999
-  
-  b 2000                # the date of b is 2000
-  
-  c l(1780)             # the date of c is at least 1780
-  
-  mrca(a,b,c) u(2000)   # the date of the most recent ancestor of a,b, and c is at most 2000
-  
-  d b(1998,2000)        # the date of d is between 1998 and 2000
-
-You can also define the labels for internal nodes and use them to define their temporal constraints.
-
-For example you have an input tree: ((a:0.12,d:0.12)n1:0.3,(b:0.3,c:0.5)n2:0.4)root;
-
-You can have an input date file as follows:
-
-  5
-  
-  a 2000
-  
-  n1 l(2001)
-  
-  c b(2001,2004)
-  
-  n2 u(2003)
-  
-  root b(1998,1999)
-
-Example of Outgroup_file format:
-
-	2
-	
-	outgroup1
-	
-	outgroup2
-
-Example of given_rate_file format:
-
-	0.0068
-	
-	0.0052
 
 3) Output files: 
 
