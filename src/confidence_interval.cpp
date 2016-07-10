@@ -155,7 +155,7 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
     if (pr->rho>rho_right) rho_right=pr->rho;
     double* T_sort = new double[pr->nbSampling];
     for (int i=0;i<=pr->nbBranches;i++){
-        if (nodes[i]->type!='p' && tab[i]!=-1) {
+        if (tab[i]!=-1) {
             for (int j=0;j<pr->nbSampling;j++) {
                 T_sort[j]=T_simul[j][tab[i]];
             }
