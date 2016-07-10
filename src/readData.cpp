@@ -224,15 +224,15 @@ int tree2dataS(FILE * tree,Pr* pr,Node** nodes){
             countleaf++;
         }
         else if (c=='(') {a++;pileNode.push(-1);}
+        else if (c=='\n') {
+            c=readChar(tree,"input tree");
+        }
     }  while (a>0);
+    nodes[0]->P=-1;
+    nodes[0]->B=-1;
     while (c!='\n') {
         c=readChar(tree,"input tree");
     }
-    nodes[0]=new Node();
-    nodes[0]->P=-1;
-    nodes[0]->B=-1;
-    nodes[0]->type='p';
-    nodes[0]->D=pr->mrca;
     if (nbChild==2) {
         pr->rooted=true;
     }
