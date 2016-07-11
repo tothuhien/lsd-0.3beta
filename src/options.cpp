@@ -311,7 +311,7 @@ void printHelp( void )
 {
     printf(BOLD"LSD: LEAST-SQUARES METHODS TO ESTIMATE RATES AND DATES - " VERSION" by Thu-Hien To\n\n");
     printf(BOLD"DESCRIPTION\n"
-           FLAT"\tThis program estimates the rate and the internal dates of the input phylogenies with dated tips.\n"
+           FLAT"\tThis program estimates the rate and the dates of the input phylogenies given some temporal constraints.\n"
            FLAT"\tIt minimizes the square errors of the branch lengths under normal distribution model.\n\n"
            );
     printf(BOLD"SYNOPSIS\n"
@@ -319,7 +319,7 @@ void printHelp( void )
            FLAT"[" BOLD"-d " LINE"inputDateFile" FLAT"] "
            FLAT"[" BOLD"-o " LINE"outputFile" FLAT"] "
            FLAT"[" BOLD"-c" FLAT"] "
-           FLAT"[" BOLD"-v" FLAT"] "
+           FLAT"[" BOLD"-v " LINE"mode" FLAT"] "
            FLAT"[" BOLD"-s " LINE"sequenceLength" FLAT"] "
            FLAT"[" BOLD"-n " LINE"datasetNumber" FLAT"]\n"
            FLAT"\t     [" BOLD"-t " LINE"lowerBoundRate" FLAT"] "
@@ -327,6 +327,7 @@ void printHelp( void )
            FLAT"[" BOLD"-b " LINE"varianceParameter" FLAT"] "
            FLAT"[" BOLD"-w " LINE"givenRateFile" FLAT"] "
            FLAT"[" BOLD"-g " LINE"outgroupFile" FLAT"] "
+	   FLAT"[" BOLD"-f " LINE"nbSamplings" FLAT"] "
            FLAT"[" BOLD"-h" FLAT"]\n"
            FLAT"\n");
     
