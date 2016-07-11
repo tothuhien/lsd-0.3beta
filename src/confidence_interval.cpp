@@ -219,8 +219,8 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
     }
     else{
         if (!pr->constraint) {
-            printf("WARNING: Confidence intervals are not warranted under non-constraint mode");
-            fprintf(f,"WARNING: Confidence intervals are not warranted under non-constraint mode");
+            printf("WARNING: Confidence intervals are not warranted under non-constraint mode\n");
+            fprintf(f,"WARNING: Confidence intervals are not warranted under non-constraint mode\n");
         }
         double* T_min = new double[pr->nbBranches+1];
         double* T_max = new double[pr->nbBranches+1];
