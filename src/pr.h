@@ -25,7 +25,7 @@ typedef struct Pr
 	double mrca;
 	double leaves;
 	int    seqLength;      //Longueur des sequences dans l'alignement
-	int    nbData;         //Nombre de cas a  traiter (dans le cas de bootstrap)
+	int    nbData;         //Nombre de cas aÂ  traiter (dans le cas de bootstrap)
 	string fnOutgroup;
 	string rate;           //le fichier contient les taux en entree
 	string estimate_root;    //Method to estimate root
@@ -55,13 +55,14 @@ typedef struct Pr
        mrca=pr->mrca;
        leaves=pr->leaves;
        seqLength=pr->seqLength;      //Longueur des sequences dans l'alignement
-       nbData=pr->nbData;         //Nombre de cas a  traiter (dans le cas de bootstrap)
+       nbData=pr->nbData;         //Nombre de cas aÂ  traiter (dans le cas de bootstrap)
        rate=pr->rate;           //le fichier contient les taux en entree
        rooted=pr->rooted;
        constraint=pr->constraint;       //Impose the constraints or not
        variance=pr->variance;         //Use the variances or not
        ci=pr->ci;         //Compute confidence interval or not
        c=pr->c;                //var = b+c/s;
+       rho=pr->rho;
        rho_min=pr->rho_min;
        givenRate=pr->givenRate;
        nbSampling=pr->nbSampling;
