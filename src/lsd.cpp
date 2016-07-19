@@ -86,7 +86,7 @@ int main( int argc, char** argv ){
             for (int i=opt->nbINodes;i<=opt->nbBranches;i++){
                 nodes[i]->newPConstraint('p',opt->leaves);
             }
-            Date* dateRoot = new Date('p',0,0,0);
+            Date* dateRoot = new Date('p',opt->mrca,0,0);
             opt->internalConstraints.clear();
             opt->internalConstraints.push_back(dateRoot);
         }
