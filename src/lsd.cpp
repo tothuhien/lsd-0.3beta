@@ -117,7 +117,7 @@ int main( int argc, char** argv ){
                 nodes[s1]->V=variance(opt,br);
                 nodes[s2]->V=nodes[s1]->V;
                 without_constraint_active_set_lambda(br,opt,nodes);
-                br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
+                //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                 output(br,y,opt,nodes,result,tree1,tree2,tree3);
             }
             else{//estimate the root
@@ -139,7 +139,7 @@ int main( int argc, char** argv ){
                     }
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
                     without_constraint_active_set_lambda(br,opt,nodes_new);
-                    br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
+                    //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
                     delete[] nodes_new;
                 }
@@ -171,7 +171,7 @@ int main( int argc, char** argv ){
                     nodes[s1]->V=variance(opt,br);
                     nodes[s2]->V=nodes[s1]->V;
                     with_constraint_active_set_lambda(br,opt,nodes);
-                    br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
+                    //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes,result,tree1,tree2,tree3);
             }
             else{//estimate the root
@@ -196,7 +196,7 @@ int main( int argc, char** argv ){
                     }
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
                     with_constraint_active_set_lambda(br,opt,nodes_new);
-                    br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
+                    //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
                     delete[] nodes_new;
                 }
