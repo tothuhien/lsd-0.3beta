@@ -131,17 +131,9 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
             nodesReduced[j]->B=B_simul[r][j];
         }
         initialize_status(prReduced, nodesReduced);
-        if (pr->estimate_root=="") {
-            computeVariance(prReduced, nodesReduced);
-            if (pr->constraint) with_constraint_active_set(prReduced,nodesReduced);
-            else without_constraint_active_set(prReduced,nodesReduced);
-        }
-        else{
-            double br_simul = (double)distribution(generator)/(pr->seqLength);
-            computeVarianceEstimateRoot(prReduced, nodesReduced,br_simul);
-            if (pr->constraint) with_constraint_active_set_lambda(br_simul,prReduced,nodesReduced);
-            else without_constraint_active_set_lambda(br_simul,prReduced,nodesReduced);
-        }
+        computeVariance(prReduced, nodesReduced);
+        if (pr->constraint) with_constraint_active_set(prReduced,nodesReduced);
+        else without_constraint_active_set(prReduced,nodesReduced);
         T_simul[r]=new double[prReduced->nbBranches+1];
         for (int j=0;j<=prReduced->nbBranches;j++) T_simul[r][j]=nodesReduced[j]->D;
         rho_simul[r]=prReduced->rho;
