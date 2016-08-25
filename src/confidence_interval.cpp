@@ -108,7 +108,6 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
     for (int i=0;i<pr->nbSampling;i++){
         B_simul[i]=new double[prReduced->nbBranches+1];
     }
-    double* br_simul = new double[pr->nbSampling];
     srand ( time(NULL) );
     std::default_random_engine generator;
     double minB=nodesReduced[1]->B;
