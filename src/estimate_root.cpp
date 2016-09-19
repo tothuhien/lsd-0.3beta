@@ -1300,7 +1300,6 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
     iter++;
     int s2=(*iter);
     double br=0;
-    double rho=-1;
     int r=0;
     cout<<"Optimizing the root position on the original branch "<<s1<<" ... ";
     bool bl = reroot_rootedtree(br,s1,s1,s2,pr,nodes,nodes_new);
@@ -1311,7 +1310,6 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
             printf("%.10f\n",cv[s1]);
             cv[s2]=cv[s1];
             phi1=cv[s1];
-            rho=pr->rho;
             r=s1;
         }
         else{
@@ -1351,7 +1349,7 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
                         }
                     }
                     if (cv[i]<phi1 || r==0){
-                        phi1=cv[i];r=i;pr->rho=rho;
+                        phi1=cv[i];r=i;
                     }
                 }
             }
@@ -1391,7 +1389,6 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
     int y=1;
     double br=0;
     int r=0;
-    double rho=-1;
     vector<int>::iterator iter=nodes[0]->suc.begin();
     int s1=(*iter);
     iter++;
@@ -1404,7 +1401,6 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
             phi1=pr->objective;
             printf("%.10f\n",phi1);
             r=y;
-            rho=pr->rho;
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1429,7 +1425,6 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
                 if (phi1>phi || r==0){
                     phi1=phi;
                     r=y;
-                    rho=pr->rho;
                 }
             }
             else{
@@ -1461,7 +1456,6 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
     iter++;
     int s2=(*iter);
     double br=0;
-    double rho=-1;
     int r=0;
     double phi1;
     cout<<"Optimizing the root position on the original branch "<<s1<<" ... ";
@@ -1472,7 +1466,6 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
             cv[s1]=pr->objective;
             printf("%.10f\n",cv[s1]);
             cv[s2]=cv[s1];
-            rho=pr->rho;
             r=s1;
             phi1=cv[s1];
         }
@@ -1513,7 +1506,7 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
                         }
                     }
                     if (cv[i]<phi1 || r==0){
-                        phi1=cv[i];r=i;rho=pr->rho;
+                        phi1=cv[i];r=i;
                     }
                 }
             }
@@ -1548,7 +1541,6 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
     //P: rooted tree, oublier la racine, recherche la nouvelle racine sur toutes les branches
     /////////////estimate root on all branches with QPD algorithm for rooted tree////////////////////////////////////////////////////////////
     //cout<<"Re-estimating the root with constraints on all branches using fast method."<<endl;
-    double rho;
     vector<int>::iterator iter=nodes[0]->suc.begin();
     int s01=(*iter);
     iter++;
@@ -1558,7 +1550,6 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
     cout<<"Re-estimating the position of the root with temporal constraints around the pre-estimated root ..."<<endl;
     if (r>0){
         double phi1=pr->objective;
-        rho=pr->rho;
         //cout<<"Re-estimating the root with constraints around the given root ... ";
         //cout<<"Optimizing the root position on the branch "<<r<<" ... ";
         Node** nodes_new = cloneLeaves(pr,nodes,0);
@@ -1575,7 +1566,6 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
                 cv[r]=pr->objective;
                 printf("%.10f\n",cv[r]);
                 phi1=cv[r];
-                rho=pr->rho;
             }
             else{
                 printf("Temporal constraints conflict\n");
@@ -1617,7 +1607,7 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
                             next.push_back(Suc2_ref[i]);
                         }
                         if (cv[i]<phi1 || r==0){
-                            phi1=cv[e];r=e;rho=pr->rho;
+                            phi1=cv[e];r=e;
                         }
                     }
                 }
@@ -1661,7 +1651,6 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     double phi1;
     double phi;
     int r=0;
-    double rho=-1;
     vector<int>::iterator iter=nodes[0]->suc.begin();
     int s1=(*iter);
     iter++;
@@ -1674,7 +1663,6 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
             printf("%.10f\n",pr->objective);
             r=y;
             phi1=pr->objective;
-            rho=pr->rho;
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1698,7 +1686,6 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
                 if (phi1>phi  || r==0){
                     phi1=phi;
                     r=y;
-                    rho=pr->rho;
                 }
             }
             else{
@@ -1716,4 +1703,3 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     delete[] nodes_new;
     return r;
 }
-
