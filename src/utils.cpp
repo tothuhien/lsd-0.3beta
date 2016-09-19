@@ -74,7 +74,6 @@ double readdouble(FILE *f,string fn){
         else return c-'0';
     }
 }
-
 double readdouble(FILE *f,int c){
     double r=c;
     char ch;
@@ -152,7 +151,6 @@ void listToArray(list<string> li,string* & arr){
         count++;
     }
 }
-
 void listToArray(list<double> li,double* & arr){
     int count=0;
     for (list<double>::iterator i=li.begin();i!=li.end();i++){
@@ -386,51 +384,6 @@ int choose(bool* & flag,int* & Suc1,int* & Suc2,int size){
     return -1;
 }
 
-void counting(string inFile,int& n,int& m){
-    FILE * tree = fopen(inFile.c_str(),"rt");
-    if (tree==NULL){
-        cout<<"Error: can not open the input file"<<endl;
-        exit(EXIT_FAILURE);
-    }
-    stack<int> pileNode;
-    char c = readBracket(tree,"input tree");
-    int a=1;
-    int s=0;
-    int nbChild=0;
-    do{
-        c = readChar(tree,"input tree");
-        if (c==')'){
-            a--;
-            s=0;
-            nbChild=0;
-            while (!pileNode.empty() && s!=-1) {
-                s=pileNode.top();pileNode.pop();
-                if (s!=-1){
-                    nbChild++;
-                }
-            }
-            string sp=readSupport(tree,"input tree");
-            if (a>0) {
-                double d = readdouble(tree,"input tree");
-            }
-            pileNode.push(1);
-            n++;
-            m++;
-        }
-        else if (c!='(' && c!=',' && c!=-1 && c!=';' && c!='\n'){
-            string s= readLabel(c,tree,a);
-            pileNode.push(1);
-            double d =readdouble(tree,"input tree");
-            m++;
-        }
-        else if (c=='(') {a++;pileNode.push(-1);}
-        else if (c=='\n') {
-            c=readChar(tree,"input tree");
-        }
-    }  while (a>0);
-    fclose(tree);
-    m--;
-}
 
 
 Node** unrooted2rooted(Pr* pr,Node** nodes,int s){
@@ -1127,13 +1080,11 @@ int reroot_rootedtree(int r,Pr* pr,Node** nodes,Node** nodes_new){//used in extr
         nodes_new[0]->P=-1;
         nodes_new[r]->P=0;
         nodes_new[nodes[r]->P]->P=0;
-        int ii=r;
         int i=nodes[r]->P;
         int j=nodes[i]->P;
         while (j!=0){
             nodes_new[j]->P=i;
             nodes_new[j]->B=nodes[i]->B;
-            ii=i;
             i=j;
             j=nodes[i]->P;
         }
@@ -1613,4 +1564,3 @@ void checkRooted(Pr* opt){
         opt->rooted=false;
     }
 }
-
