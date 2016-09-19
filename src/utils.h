@@ -67,7 +67,6 @@ string readLabel(FILE *f,FILE *w);
 
 string readLabel(char ch,FILE *f,int& a);
 
-void counting(string inFile,int& n,int& m);
 
 char readBracket(FILE *f,string fn);
 
