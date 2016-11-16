@@ -141,6 +141,7 @@ int main( int argc, char** argv ){
                     without_constraint_active_set_lambda(br,opt,nodes_new);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
+                    for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];
                     delete[] nodes_new;
                 }
             }
@@ -198,12 +199,15 @@ int main( int argc, char** argv ){
                     with_constraint_active_set_lambda(br,opt,nodes_new);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
+                    for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];
                     delete[] nodes_new;
                 }
             }
         }
     }
+    for (int i=0;i<opt->nbBranches+1;i++) delete nodes[i];
     delete[] nodes;
+    delete opt;
     elapsed_time = (double)(clock()-start)/CLOCKS_PER_SEC;
     fprintf(result, "\n*********************************************************\n" );
     fprintf(result, "Elapsed time: %.2f seconds\n", elapsed_time);
@@ -217,4 +221,3 @@ int main( int argc, char** argv ){
     if (opt->rate!="") fclose(gr);
     return EXIT_SUCCESS;
 }
-
