@@ -154,7 +154,7 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
                 v1=atof(wd.c_str());
                 type='p';
             }
-            Date* newdate = new Date();
+            Date* newdate;
             if (mr.size()>0){
                 newdate = new Date(type,v1,v2,mr);
             }
@@ -166,6 +166,7 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
             }
             else{
                 bool bl = nodes[k]->addConstraint(newdate);
+                delete newdate;
                 constraintConsistent=constraintConsistent && bl;
             }
         }
@@ -371,5 +372,4 @@ void extrait_outgroup(Pr* pr,list<string> &outgroups){
     }
     fclose(tree);
 }
-
 
