@@ -266,6 +266,8 @@ list<double> computeLambda(list<int> active_set,Pr* pr,Node** nodes){
     if (myabs(sr)>1e-6) {
         cout<<"TEST PROBLEM rho "<<sr<<endl;
     }*/
+    delete[] lambda;
+    delete[] as;
     return ld;
 }
 
@@ -579,6 +581,8 @@ bool starting_pointQP(Pr* pr,Node** nodes,list<int> &active_set){
             }
         }
     }
+    delete[] bl;
+    delete[] lowerX;
     computeObjective(pr,nodes);
     return true;
 }
