@@ -102,6 +102,9 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
     prReduced->copy(pr);
     prReduced->init();
     collapseTreeReOrder( pr, nodes_new, prReduced, nodesReduced,tab);
+    for (int i=0;i<pr->nbBranches+1;i++){
+        delete nodes_new[i];
+    }
     delete[] nodes_new;
     computeSuc_polytomy(prReduced, nodesReduced);
     double** B_simul = new double*[pr->nbSampling];
@@ -139,6 +142,12 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
         //cout<<"Tree "<<r<<" : "<<prReduced->rho<<" "<<nodesReduced[0]->D<<endl;
         delete[] B_simul[r];
     }
+    delete[] B_simul;
+    delete prReduced;
+    for (int i=0;i<nbC+pr->nbBranches-pr->nbINodes+1;i++){
+        delete nodesReduced[i];
+    }
+    delete[] nodesReduced;
     sort(rho_simul,pr->nbSampling);
     rho_left=rho_simul[int(0.025*pr->nbSampling)];
     rho_right=rho_simul[pr->nbSampling-int(0.025*pr->nbSampling)-1];
@@ -157,11 +166,13 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
             if (T_right[i]<nodes[i]->D) T_right[i]=nodes[i]->D;
         }
     }
+    delete[] tab;
     delete[] rho_simul;
     delete[] T_sort;
     for (int i=0;i<pr->nbSampling;i++){
         delete[] T_simul[i];
     }
+    delete[] T_simul;
 }
 
 void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2,FILE* tree3){
