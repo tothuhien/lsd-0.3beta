@@ -878,6 +878,9 @@ bool initConstraint(Pr* pr,Node** nodes){//internalConstraints of the old tree, 
 
 Node** cloneLeaves(Pr* pr,Node** nodes,int f){
     Node** nodes_new =  new Node*[pr->nbBranches+1+f];
+    for (int i=0; i<pr->nbINodes; i++) {
+        nodes_new[i+f] = new Node();
+    }
     for (int i=pr->nbINodes; i<=pr->nbBranches; i++) {
         nodes_new[i+f]=new Node();
         nodes_new[i+f]->P=nodes[i]->P+f;
@@ -895,7 +898,6 @@ Node** cloneLeaves(Pr* pr,Node** nodes,int f){
 
 void cloneInternalNodes(Pr* pr,Node** nodes,Node** nodes_new,int f){
     for (int i=0; i<pr->nbINodes; i++) {
-        nodes_new[i+f] = new Node();
         nodes_new[i+f]->P=nodes[i]->P+f;
         nodes_new[i+f]->B=nodes[i]->B;
         nodes_new[i+f]->L=nodes[i]->L;
