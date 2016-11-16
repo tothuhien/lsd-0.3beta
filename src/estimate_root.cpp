@@ -340,6 +340,7 @@ list<double> without_constraint_lambda(double br,Pr* par,Node** nodes,list<int> 
          if (myabs(sr)>1e-5 && par->rho!=par->rho_min) {
          cout<<"TEST PROBLEM rho "<<sr<<endl;
          }*/
+        delete[] lambda;
         delete[] as;
         return ld;
     }
@@ -398,6 +399,8 @@ bool starting_point_without_constraint_lambda(double br,Pr* pr,Node** nodes,list
             }
         }
     }
+    delete[] bl;
+    delete[] lowerX;
     for (int i =0;i<pr->nbINodes;i++) {
         if (lower(nodes[i]) || upper(nodes[i])) {
             active_set.push_back(i);
@@ -1376,6 +1379,7 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
     else if (r==s1 || r==s2) cout<<"The new root is on the original branch."<<endl;
     else cout<<"The new root is on the branch "<<r<<endl;
     delete[] cv;
+    for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
     return r;
 }
@@ -1439,6 +1443,7 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
     if (r==0) cout<<"Temporal constraints conflict."<<endl;
     else if (r==s1 || r==s2) cout<<"The new root is on the original branch."<<endl;
     else cout<<"The new root is on the branch "<<r<<endl;
+    for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
     return r;
 }
@@ -1533,6 +1538,7 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
     else if (r==s1 || r==s2) cout<<"The new root is on the original branch."<<endl;
     else cout<<"The new root is on the branch "<<r<<endl;
     delete[] cv;
+    for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
     return r;
 }
@@ -1635,6 +1641,7 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
         delete[] tab;
         delete[] Suc1_ref;
         delete[] Suc2_ref;
+        for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
         delete[] nodes_new;
     }
     return r;
@@ -1644,7 +1651,6 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
 int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     //P: rooted tree
     //estimate root with QPD algorithm for rooted tree//////////////////////////////////
-    //cout<<"Re-estimating the root using constrained mode on all branches ... ";
     int y=1;
     Node** nodes_new = cloneLeaves(pr,nodes,0);
     double br=0;
@@ -1700,6 +1706,7 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     if (r==0) cout<<"Temporal constraints conflict."<<endl;
     else if (r==s1 || r==s2) cout<<"The new root is on the original branch."<<endl;
     else cout<<"The new root is on the branch "<<r<<endl;
+    for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
     return r;
 }
