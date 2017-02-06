@@ -63,9 +63,6 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
     }  while (a>0);
     nodes[0]->P=-1;
     nodes[0]->B=-1;
-    while (c!='\n') {
-        c=readChar(tree,"input tree");
-    }
     if (nbChild==2) {
         pr->rooted=true;
     }
