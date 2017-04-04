@@ -53,7 +53,7 @@ You can also define the labels for internal nodes and use them to define their t
 
 ### Example of given_rate_file format 
 
-Each rate per line, correspond to each tree in the Input_tree_file:
+Each rate per line which corresponds to each tree in the Input_tree_file:
 
 	0.0068	
 	0.0052
@@ -69,12 +69,10 @@ Each rate per line, correspond to each tree in the Input_tree_file:
 
 Suppose that we have a tree ((A:0.12,D:0.12)n1:0.3,((B:0.3,C:0.5)n2:0.4)n3:0.32,(E:0.5,(F:0.2,G:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
 
-    group1 {mrca(A,D)} {mrca(E,F) mrca(F,G)}
-    group2 {mrca(B,C)}
+    group1 {n1} {n5 n4}
+    group2 {n2}
 
-There are 3 rates: the first one is the rate on the branches (n1,A), (n1,D), (n5,n4), (n5,E), the second one is the rate on the branches (n2,B), (n2,C), and the last one is the rate on the remaining branches of the tree. 
-
-Note that if the internal nodes don't have labels, then they can be defined by mrca of at least two tips, for example n1 is mrca(A,D)
+Each line contains the name of the rate group following by a list of subtrees whose branches are supposed to have the same rate. Each subtree is defined between {}, its first term defines the root of the subtree and the following terms (if there any) define the tips of the subtree. If there's not any tip defined, then the subtree is extended down to the tips of the full tree. Hence, in the above example, there are 3 rates: the first one is the rate on the branches (n1,A), (n1,D), (n5,n4), (n5,E), the second one is the rate on the branches (n2,B), (n2,C), and the last one is the rate on the remaining branches of the tree. Note that if the internal nodes don't have labels, then they can be defined by mrca of at least two tips, for example n1 is mrca(A,D)
 
 ## Some examples of command lines:
 
