@@ -33,15 +33,15 @@ Newick format, can be either binary or polytomy, each tree per line:
 
 ### Example of Input_date_file format 
 
-It's not necessary to give the temporal constraints for all tips:
+It's not necessary to give the temporal constraints for all tips. Suppose that we have an input ((A:0.12,D:0.12):0.3,(B:0.3,C:0.5):0.4); then we can have an input date for example as follows:
 
     5			# number of temporal constraints
     A 1999		# the date of A is 1999
     B 2000		# the date of B is 2000
     C l(1990)		# the date of C is at least 1990
-    mrca(A,B,C) u(2000)	# the date of the most recent ancestor of A,B, and C is at most 2000
     D b(1998,2000)	# the date of D is between 1998 and 2000
-
+    mrca(A,B,C) u(2000)	# the date of the most recent ancestor of A,B, and C is at most 2000
+    
 You can also define the labels for internal nodes and use them to define their temporal constraints. For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)root; then you can have an input date file as follows:
 
     5
