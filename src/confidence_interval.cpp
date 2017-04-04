@@ -243,8 +243,21 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
         }
         printf("tMRCA %.6f , objective function %.6e\n",nodes[0]->D,pr->objective);
     }
-    for (int i=1;i<=pr->nbBranches;i++){
-        nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
+    if (pr->ratePartition.size()==0){
+        for (int i=1;i<=pr->nbBranches;i++){
+            nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
+        }
+    }
+    else {
+        for (int i=1;i<=pr->nbBranches;i++){
+                int g = nodes[i]->rateGroup;
+                if (g==0) {
+                    nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
+                }
+                else{
+                    nodes[i]->B=pr->rho*pr->multiplierRate[g]*(nodes[i]->D-nodes[nodes[i]->P]->D);
+                }
+        }
     }
     if (!pr->ci){
         fprintf(tree1,"tree %d = ",y);
