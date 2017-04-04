@@ -18,51 +18,55 @@ How to Run LSD:
 		
 		                                       or ./lsd -i <"input_tree_file"> -a root_date -z leaves_date (to estimate relative dates)
 		                                       
-			further options can be specified (-f -o -c -v -n -r -g ...). Type "./lsd -h" for help. Option -c is recommended to take into account the temporal constraints (date of a node >= date of its ancestors).
+			further options can be specified (-f -o -c -v -n -r -g -p ...). Type "./lsd -h" for help. Option -c is recommended to take into account the temporal constraints (date of a node >= date of its ancestors).
 
-Some examples:
+## Some examples of input files:
 
-1) Examples of input files:
 
-Example of Input_tree_file format (newick, can be either binary or polytomy)
+### Example of Input_tree_file format (newick, can be either binary or polytomy, each tree per line):
 
-((a:0.12,d:0.12):0.3,(b:0.3,c:0.5):0.4);
+((A:0.12,D:0.12):0.3,(B:0.3,C:0.5):0.4);
 
-((a:0.12,b:0.3):0.7,(c:0.5,d:0.8):0.1);
+((A:0.12,B:0.3):0.7,(C:0.5,D:0.8):0.1);
 
-Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
+### Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
 
   5			# number of temporal constraints
   
-  a 1999		# the date of a is 1999
+  A 1999		# the date of A is 1999
   
-  b 2000		# the date of b is 2000
+  B 2000		# the date of B is 2000
   
-  c l(1990)		# the date of c is at least 1990
+  C l(1990)		# the date of C is at least 1990
   
-  mrca(a,b,c) u(2000)	# the date of the most recent ancestor of a,b, and c is at most 2000
+  mrca(A,B,C) u(2000)	# the date of the most recent ancestor of A,B, and C is at most 2000
   
-  d b(1998,2000)	# the date of d is between 1998 and 2000
+  D b(1998,2000)	# the date of D is between 1998 and 2000
 
 You can also define the labels for internal nodes and use them to define their temporal constraints.
 
-For example you have an input tree: ((a:0.12,d:0.12)n1:0.3,(b:0.3,c:0.5)n2:0.4)root;
-
-You can have an input date file as follows:
+For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)root; then you can have an input date file as follows:
 
   5
   
-  a 2000
+  A 2000
   
   n1 l(2001)
   
-  c b(2001,2004)
+  C b(2001,2004)
   
   n2 u(2003)
   
   root b(1998,1999)
 
-Example of Outgroup_file format:
+### Example of given_rate_file format (each rate per line, correspond to each tree in the Input_tree_file):
+
+	0.0068
+	
+	0.0052
+
+
+### Example of Outgroup_file format:
 
 	2
 	
@@ -70,52 +74,58 @@ Example of Outgroup_file format:
 	
 	outgroup2
 
-Example of given_rate_file format:
+### Example of Partition_file: Suppose that we have a tree ((a:0.12,d:0.12)n1:0.3,((b:0.3,c:0.5)n2:0.4)n3:0.32,(e:0.5,(f:0.2,g:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
 
-	0.0068
-	
-	0.0052
-	
-2) Examples of command line:
+	group1 {mrca(a,d)} {mrca(e,f) mrca(f,g)}
+    
+    group2 {mrca(b,c)}
 
-for rooted tree, constrained mode, and using variances
+There are 3 rates: the first one is the rate on the branches (n1,a), (n1,d), (n5,n4), (n5,e), the second one is the rate on the branches (n2,b), (n2,c), and the last one is the rate on the remaining branches of the tree. 
+
+Note that if the internal nodes don't have labels, then they can be defined by mrca of at least two tips, for example n1 is mrca(a,d)
+
+## Some examples of command lines:
+
+### for rooted tree, constrained mode, and using variances
 
 ./lsd -i rootedtree_file -d date_file -c -v 1
 
-for rooted tree, constrained mode, re-estimate the root position around the given root, and non variances
+### for rooted tree, constrained mode, using variances, using partition file (note that sequence length is required via option -s to calculate variances)
+
+./lsd -i rootedtree_file -d date_file -c -v 1 -s 500 -p parition_file
+
+### for rooted tree, constrained mode, re-estimate the root position around the given root
 
 ./lsd -i rootedtree_file -d date_file -c -r l
 
-with the previous example, if you want to calculate confidence intervals from 100 simulated trees
+### similar to the previous example, but calculate confidence intervals from 100 simulated trees (note that sequence length must be specified by option -s for calculating confidence intervals)
 
-./lsd -i rootedtree_file -d date_file -c -r l -f 100
+./lsd -i rootedtree_file -d date_file -c -r l -f 100 -s 1700
 
-for unrooted tree without outgroups, without constraints, estimate the root position, and using variances
+### for unrooted tree without outgroups, without constraints, estimate the root position
 
-./lsd -i unrootedtree_file -d date_file -c -v 1 -r a
+./lsd -i unrootedtree_file -d date_file -c -r a
 
-for unrooted tree with outgroups, constrained mode, using variances from the estimated branch lengths (run LSD twice), remove outgroups to obtain the root
+### for unrooted tree with outgroups, constrained mode, using variances from the estimated branch lengths (run LSD twice), remove outgroups to obtain the root
 
-./lsd -i unrootedtree_file -d date_file -g outgroup_file -c -v 2
+./lsd -i unrootedtree_file -d date_file -g outgroup_file -c -v 2 -s 1000
 
-similary but keep outgroups and estimate the root on the branch defined by them
+### similar to the previous example, but keep outgroups in the tree, just estimate the root position defined by the outgroups
 
-./lsd -i unrootedtree_file -d date_file -g outgroup_file -k -c -v 2
+./lsd -i unrootedtree_file -d date_file -g outgroup_file -k -c -v 2 -s 1000
 
-for rooted tree, constrained mode, using variances, and using given rates to estimate dates
+### for rooted tree, constrained mode, and using given rates to estimate dates
 
-./lsd -i rootedtree_file -d date_file -w given_rate_file -c -v 1
+./lsd -i rootedtree_file -d date_file -w given_rate_file -c 
 
-for rooted tree, estimating relative dates with date root=0 and date of all leaves=1, using variances, with constraint
+### for rooted tree, estimating relative dates with date root=0 and date of all leaves=1, with constraint
 
-./lsd -i tree_file -c -v 1 -a 0 -z 1
-
-
+./lsd -i tree_file -c -a 0 -z 1
 
 
-3) Output files: 
+## Output files: 
 
-.result : contain the estimated rate, root date and the value of the objective function.
+.result : contain the estimated rates, root date and the value of the objective function.
 
 .newick : trees in newick format with the new branch length (re-estimated by the program).
 
