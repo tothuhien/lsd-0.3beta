@@ -35,112 +35,96 @@ Newick format, can be either binary or polytomy, each tree per line:
 
 It's not necessary to give the temporal constraints for all tips:
 
-  5			# number of temporal constraints
-  
-  A 1999		# the date of A is 1999
-  
-  B 2000		# the date of B is 2000
-  
-  C l(1990)		# the date of C is at least 1990
-  
-  mrca(A,B,C) u(2000)	# the date of the most recent ancestor of A,B, and C is at most 2000
-  
-  D b(1998,2000)	# the date of D is between 1998 and 2000
+    5			# number of temporal constraints
+    A 1999		# the date of A is 1999
+    B 2000		# the date of B is 2000
+    C l(1990)		# the date of C is at least 1990
+    mrca(A,B,C) u(2000)	# the date of the most recent ancestor of A,B, and C is at most 2000
+    D b(1998,2000)	# the date of D is between 1998 and 2000
 
-You can also define the labels for internal nodes and use them to define their temporal constraints.
+You can also define the labels for internal nodes and use them to define their temporal constraints. For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)root; then you can have an input date file as follows:
 
-For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)root; then you can have an input date file as follows:
-
-  5
-  
-  A 2000
-  
-  n1 l(2001)
-  
-  C b(2001,2004)
-  
-  n2 u(2003)
-  
-  root b(1998,1999)
+    5
+    A 2000
+    n1 l(2001)
+    C b(2001,2004)
+    n2 u(2003)
+    root b(1998,1999)
 
 ### Example of given_rate_file format 
 
 Each rate per line, correspond to each tree in the Input_tree_file:
 
-	0.0068
-	
+	0.0068	
 	0.0052
 
 
 ### Example of Outgroup_file format:
 
 	2
-	
 	outgroup1
-	
 	outgroup2
 
 ### Example of Partition_file: 
 
-Suppose that we have a tree ((a:0.12,d:0.12)n1:0.3,((b:0.3,c:0.5)n2:0.4)n3:0.32,(e:0.5,(f:0.2,g:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
+Suppose that we have a tree ((A:0.12,D:0.12)n1:0.3,((B:0.3,C:0.5)n2:0.4)n3:0.32,(E:0.5,(F:0.2,G:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
 
-    group1 {mrca(a,d)} {mrca(e,f) mrca(f,g)}
-    
-    group2 {mrca(b,c)}
+    group1 {mrca(A,D)} {mrca(E,F) mrca(F,G)}
+    group2 {mrca(B,C)}
 
-There are 3 rates: the first one is the rate on the branches (n1,a), (n1,d), (n5,n4), (n5,e), the second one is the rate on the branches (n2,b), (n2,c), and the last one is the rate on the remaining branches of the tree. 
+There are 3 rates: the first one is the rate on the branches (n1,A), (n1,D), (n5,n4), (n5,E), the second one is the rate on the branches (n2,B), (n2,C), and the last one is the rate on the remaining branches of the tree. 
 
-Note that if the internal nodes don't have labels, then they can be defined by mrca of at least two tips, for example n1 is mrca(a,d)
+Note that if the internal nodes don't have labels, then they can be defined by mrca of at least two tips, for example n1 is mrca(A,D)
 
 ## Some examples of command lines:
 
 ### for rooted tree, constrained mode, and using variances
 
-./lsd -i rootedtree_file -d date_file -c -v 1
+    ./lsd -i rootedtree_file -d date_file -c -v 1
 
 ### for rooted tree, constrained mode, using variances, using partition file 
 
 (note that sequence length is required via option -s to calculate variances)
 
-./lsd -i rootedtree_file -d date_file -c -v 1 -s 500 -p parition_file
+    ./lsd -i rootedtree_file -d date_file -c -v 1 -s 500 -p parition_file
 
 ### for rooted tree, constrained mode, re-estimate the root position around the given root
 
-./lsd -i rootedtree_file -d date_file -c -r l
+    ./lsd -i rootedtree_file -d date_file -c -r l
 
 ### similar to the previous example, but calculate confidence intervals from 100 simulated trees 
 
 (note that sequence length must be specified by option -s for calculating confidence intervals)
 
-./lsd -i rootedtree_file -d date_file -c -r l -f 100 -s 1700
+    ./lsd -i rootedtree_file -d date_file -c -r l -f 100 -s 1700
 
 ### for unrooted tree without outgroups, without constraints, estimate the root position
 
-./lsd -i unrootedtree_file -d date_file -c -r a
+    ./lsd -i unrootedtree_file -d date_file -c -r a
 
 ### for unrooted tree with outgroups, constrained mode, using variances from the estimated branch lengths (run LSD twice), remove outgroups to obtain the root
 
-./lsd -i unrootedtree_file -d date_file -g outgroup_file -c -v 2 -s 1000
+    ./lsd -i unrootedtree_file -d date_file -g outgroup_file -c -v 2 -s 1000
 
 ### similar to the previous example, but keep outgroups in the tree, just estimate the root position defined by the outgroups
 
-./lsd -i unrootedtree_file -d date_file -g outgroup_file -k -c -v 2 -s 1000
+    ./lsd -i unrootedtree_file -d date_file -g outgroup_file -k -c -v 2 -s 1000
 
 ### for rooted tree, constrained mode, and using given rates to estimate dates
 
-./lsd -i rootedtree_file -d date_file -w given_rate_file -c 
+    ./lsd -i rootedtree_file -d date_file -w given_rate_file -c 
 
 ### for rooted tree, estimating relative dates with date root=0 and date of all leaves=1, with constraint
 
-./lsd -i tree_file -c -a 0 -z 1
+    ./lsd -i tree_file -c -a 0 -z 1
 
 
 ## Output files: 
 
-.result : contain the estimated rates, root date and the value of the objective function.
+    .result : contain the estimated rates, root date and the value of the objective function.
 
-.newick : trees in newick format with the new branch length (re-estimated by the program).
+    .newick : trees in newick format with the new branch length (re-estimated by the program).
 
-.date.newick : trees in newick format where branch lengths are measured rescaled to time unit by multiplying with the estimated rate. 
+    .date.newick : trees in newick format where branch lengths are measured rescaled to time unit by multiplying with the estimated rate. 
 
-.nexus : trees in nexus format which contain information about the dates of internal nodes (named date), branch lengths, and the confidence intervals (named CI) if option -f was used.
+    .nexus : trees in nexus format which contain information about the dates of internal nodes (named date), branch lengths, and the confidence intervals (named CI) if option -f was used.
