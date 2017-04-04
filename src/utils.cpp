@@ -28,6 +28,18 @@ string readWord(FILE *f,string fn){
     return s;
 }
 
+string readWord(string line,int& pos){
+    string s;
+    char c=line.at(pos);
+    while (pos < line.length() && (c<33 || c>126)){ c=line.at(pos);pos++;}
+    while (pos < line.length() && c>=33 && c<=126){
+        c=line.at(pos);
+        s=s+c;
+        pos++;
+    }
+    return s;
+}
+
 int getLineNumber(string fn){
     ifstream myfile(fn.c_str());
     string line;
@@ -35,7 +47,7 @@ int getLineNumber(string fn){
     while (getline(myfile, line)){
         nb++;
     }
-    myfile.close();    
+    myfile.close();
     return nb;
 }
 
@@ -58,32 +70,32 @@ double readdouble(FILE *f,string fn){
 }
 
 /*double readdouble(FILE *f,char c){
-    double r;
-    if (fscanf(f,"%lf",&r)==1){
-        if (c=='-') {
-            return -r;
-        }
-        else{
-            return pow(10,log10(r)+1)*(c-'0')+r;
-        }
-    }
-    else {
-        if (c=='-') {
-            return 0;
-        }
-        else return c-'0';
-    }
-}
-double readdouble(FILE *f,int c){
-    double r=c;
-    char ch;
-    fscanf(f,"%c",&ch);
-    while (ch>='0' && ch<='9') {
-        r=r*10+(ch-'0');
-        fscanf(f,"%c",&ch);
-    }
-    return r;
-}*/
+ double r;
+ if (fscanf(f,"%lf",&r)==1){
+ if (c=='-') {
+ return -r;
+ }
+ else{
+ return pow(10,log10(r)+1)*(c-'0')+r;
+ }
+ }
+ else {
+ if (c=='-') {
+ return 0;
+ }
+ else return c-'0';
+ }
+ }
+ double readdouble(FILE *f,int c){
+ double r=c;
+ char ch;
+ fscanf(f,"%c",&ch);
+ while (ch>='0' && ch<='9') {
+ r=r*10+(ch-'0');
+ fscanf(f,"%c",&ch);
+ }
+ return r;
+ }*/
 
 int readInt(FILE *f,string msg){
     int d;
@@ -131,44 +143,44 @@ void concat(list<int> & l1,stack<int> l2){
 }
 
 /*
-list<int> arrayToList(int* & arr,list<int> li,int n){
-    for (int i=0;i<n;i++){
-        li.push_back(arr[i]);
-    }
-    return li;
-}
-void listToArray(list<int> li,int* & arr){
-    int count=0;
-    for (list<int>::iterator i=li.begin();i!=li.end();i++){
-        arr[count]=(*i);
-        count++;
-    }
-}
-void listToArray(list<string> li,string* & arr){
-    int count=0;
-    for (list<string>::iterator i=li.begin();i!=li.end();i++){
-        arr[count]=(*i);
-        count++;
-    }
-}
-void listToArray(list<double> li,double* & arr){
-    int count=0;
-    for (list<double>::iterator i=li.begin();i!=li.end();i++){
-        arr[count]=(*i);
-        count++;
-    }
-}
-void listToArray(list<string> & inner,list<string> & leaves,string* & arr){
-    int count=0;
-    for (list<string>::iterator i=inner.begin();i!=inner.end();i++){
-        arr[inner.size()-count-1]=(*i);
-        count++;
-    }
-    for (list<string>::iterator i=leaves.begin();i!=leaves.end();i++){
-        arr[count]=(*i);
-        count++;
-    }
-}*/
+ list<int> arrayToList(int* & arr,list<int> li,int n){
+ for (int i=0;i<n;i++){
+ li.push_back(arr[i]);
+ }
+ return li;
+ }
+ void listToArray(list<int> li,int* & arr){
+ int count=0;
+ for (list<int>::iterator i=li.begin();i!=li.end();i++){
+ arr[count]=(*i);
+ count++;
+ }
+ }
+ void listToArray(list<string> li,string* & arr){
+ int count=0;
+ for (list<string>::iterator i=li.begin();i!=li.end();i++){
+ arr[count]=(*i);
+ count++;
+ }
+ }
+ void listToArray(list<double> li,double* & arr){
+ int count=0;
+ for (list<double>::iterator i=li.begin();i!=li.end();i++){
+ arr[count]=(*i);
+ count++;
+ }
+ }
+ void listToArray(list<string> & inner,list<string> & leaves,string* & arr){
+ int count=0;
+ for (list<string>::iterator i=inner.begin();i!=inner.end();i++){
+ arr[inner.size()-count-1]=(*i);
+ count++;
+ }
+ for (list<string>::iterator i=leaves.begin();i!=leaves.end();i++){
+ arr[count]=(*i);
+ count++;
+ }
+ }*/
 int getPosition(Node** nodes,string s,int n,int m){
     int i = n;
     int count=0;
@@ -296,6 +308,13 @@ bool contain(int s,list<int> l){
     return false;
 }
 
+bool contain(int s,vector<int> l){
+    for (int i=0;i<l.size();i++){
+        if (s==l[i]) return true;
+    }
+    return false;
+}
+
 bool contain(string s,list<string> l){
     for (list<string>::iterator iter = l.begin();iter!=l.end();iter++){
         if (s.compare(*iter)==0) return true;
@@ -354,14 +373,14 @@ char readBracket(FILE *f,string fn){
 }
 
 char readCommaBracket(FILE *f,string fn,string& s){
-       char c=readChar(f,fn);
-	s="";
-        while (c==' ' || c=='	'){ c=readChar(f,fn);}
-	while (c!=',' && c!=')'){
-             s=s+c;
-             c=readChar(f,fn);
-	}
-        return c;
+    char c=readChar(f,fn);
+    s="";
+    while (c==' ' || c=='	'){ c=readChar(f,fn);}
+    while (c!=',' && c!=')'){
+        s=s+c;
+        c=readChar(f,fn);
+    }
+    return c;
 }
 char read2P(FILE *f,string fn){
     char c= readChar(f,fn);
@@ -594,31 +613,31 @@ int index(int* & tab,int value,int size){
 }
 
 int mrca(Node** nodes,list<int> taxa){
-
+    
     int t=taxa.front();
-
+    
     taxa.pop_front();
-
+    
     bool flag = false;
-
+    
     while (!flag && nodes[t]->P!=-1){
-
+        
         t = nodes[t]->P;
-
+        
         flag=true;
-
+        
         for (list<int>::iterator ia=taxa.begin();ia!=taxa.end();ia++){
-
+            
             int j=*ia;
-
+            
             if (!isAncestor(nodes,t,j)) {flag=false;break;}
-
+            
         }
-
+        
     }
-
+    
     return t;
-
+    
 }
 int mrca(Node** nodes,vector<int> taxa){
     int first=taxa.front();
@@ -635,21 +654,21 @@ int mrca(Node** nodes,vector<int> taxa){
     return t;
 }
 /*
-int mrca(Node** nodes,list<int> taxa){
-    int t=taxa.front();
-    taxa.pop_front();
-    bool flag = false;
-    while (!flag && nodes[t]->P!=-1){
-        t = nodes[t]->P;
-        flag=true;
-        for (list<int>::iterator ia=taxa.begin();ia!=taxa.end();ia++){
-            int j=*ia;
-            if (!isAncestor(nodes,t,j)) {flag=false;break;}
-        }
-    }
-    return t;
-}
-*/
+ int mrca(Node** nodes,list<int> taxa){
+ int t=taxa.front();
+ taxa.pop_front();
+ bool flag = false;
+ while (!flag && nodes[t]->P!=-1){
+ t = nodes[t]->P;
+ flag=true;
+ for (list<int>::iterator ia=taxa.begin();ia!=taxa.end();ia++){
+ int j=*ia;
+ if (!isAncestor(nodes,t,j)) {flag=false;break;}
+ }
+ }
+ return t;
+ }
+ */
 void computeSuc(int* & Pre,int* & Suc1,int* & Suc2,int size,int n){
     for (int i=0;i<n;i++){
         Suc1[i]=-1;
@@ -917,11 +936,11 @@ void shiftInternalConstraints(Pr* pr){
     for (vector<Date*>::iterator iter=pr->internalConstraints.begin();iter!=pr->internalConstraints.end();iter++){
         Date* d = (*iter);
         if (d->mrca.size()>0){
-           vector<int> new_mrca;
-           for (vector<int>::iterator iter=d->mrca.begin();iter!=d->mrca.end();iter++){
-              new_mrca.push_back(*iter+1);
-	   }
-           d->mrca=new_mrca;
+            vector<int> new_mrca;
+            for (vector<int>::iterator iter=d->mrca.begin();iter!=d->mrca.end();iter++){
+                new_mrca.push_back(*iter+1);
+            }
+            d->mrca=new_mrca;
         }
         else{
             d->id++;
@@ -1109,6 +1128,23 @@ void computeObjective(Pr* pr,Node** nodes){
     }//p = -(log likelihood)
 }
 
+void computeObjectiveMultiRates(Pr* pr,Node** nodes){
+    pr->objective = 0;
+    for (int i=1;i<=pr->nbBranches;i++){
+        double rate = pr->rho*pr->multiplierRate[nodes[i]->rateGroup];
+        pr->objective+=(nodes[i]->B-rate*nodes[i]->D+rate*nodes[nodes[i]->P]->D)*(nodes[i]->B-rate*nodes[i]->D+rate*nodes[nodes[i]->P]->D)/(nodes[i]->V);
+    }//p = -(log likelihood)
+}
+
+void computeObjectiveMultiRates(Pr* pr,Node** nodes,double* B,double* V){
+    pr->objective = 0;
+    double test = 0;
+    for (int i=1;i<=pr->nbBranches;i++){
+        double rate = pr->rho*pr->multiplierRate[nodes[i]->rateGroup];
+        pr->objective+=(B[i]-rate*nodes[i]->D+rate*nodes[nodes[i]->P]->D)*(B[i]-rate*nodes[i]->D+rate*nodes[nodes[i]->P]->D)/(V[i]);
+    }//p = -(log likelihood)
+}
+
 void computeObjectiveEstimateRoot(int r,int p_r,double br,Pr* pr,Node** nodes){
     pr->objective = (br-pr->rho*nodes[r]->D-pr->rho*nodes[p_r]->D+2*pr->rho*nodes[0]->D)*(br-pr->rho*nodes[r]->D-pr->rho*nodes[p_r]->D+2*pr->rho*nodes[0]->D)/nodes[r]->V;
     for (int i=1;i<=pr->nbBranches;i++){
@@ -1119,27 +1155,27 @@ void computeObjectiveEstimateRoot(int r,int p_r,double br,Pr* pr,Node** nodes){
     }//p = -(log likelihood)
 }
 /*
-double phi_lambda(int n,int m,int* &P,double* &B,double* &V,double* &T,double rho){
-    double p=0;
-    for (int i=1;i<=m;i++){
-        if (P[i]!=0){
-            p+=(B[i]-rho*T[i]+rho*T[P[i]])*(B[i]-rho*T[i]+rho*T[P[i]])/(V[i]);
-        }
-    }
-    return p;
-}
-double phi(int n,int m,double &rho,int* & P,double* & B,double* & V,double* & T){
-    double a=0;
-    double b=0;
-    double c=0;
-    for (int i=1;i<=m;i++){
-        a+=(T[P[i]]-T[i])*(T[P[i]]-T[i])/V[i];
-        b+=2*(T[P[i]]-T[i])*B[i]/V[i];
-        c+=B[i]*B[i]/V[i];
-    }
-    rho=-b/a/2;
-    return a*rho*rho+b*rho+c;
-}*/
+ double phi_lambda(int n,int m,int* &P,double* &B,double* &V,double* &T,double rho){
+ double p=0;
+ for (int i=1;i<=m;i++){
+ if (P[i]!=0){
+ p+=(B[i]-rho*T[i]+rho*T[P[i]])*(B[i]-rho*T[i]+rho*T[P[i]])/(V[i]);
+ }
+ }
+ return p;
+ }
+ double phi(int n,int m,double &rho,int* & P,double* & B,double* & V,double* & T){
+ double a=0;
+ double b=0;
+ double c=0;
+ for (int i=1;i<=m;i++){
+ a+=(T[P[i]]-T[i])*(T[P[i]]-T[i])/V[i];
+ b+=2*(T[P[i]]-T[i])*B[i]/V[i];
+ c+=B[i]*B[i]/V[i];
+ }
+ rho=-b/a/2;
+ return a*rho*rho+b*rho+c;
+ }*/
 
 string newick(int i,int n,int* & P,int* & Suc1,int* & Suc2,string* & Labels,double* & B){
     ostringstream b;
@@ -1564,5 +1600,160 @@ void checkRooted(Pr* opt){
     }
     else{
         opt->rooted=false;
+    }
+}
+
+int firstCharacter(string s,int p){
+    while (p<s.length() && (s.at(p)<33 || s.at(p)>126)) {
+        p++;
+    }
+    return p;
+}
+
+int lastCharacter(string s,int p){
+    while (p<s.length() && (s.at(p)>=33 && s.at(p)<=126)) {
+        p++;
+    }
+    return p;
+}
+
+int getInternalNodeId(Pr* pr,Node** nodes,string s){
+    int k = getPosition(nodes,s,0,pr->nbBranches+1);
+    if (k==-1 && (s.substr(0,4).compare("mrca")==0)){
+        vector<int> mr;
+        char c='(';
+        int p = 5;
+        while (c!=')'){
+            int newp = s.find_first_of(",)",p);
+            if (newp==-1){
+                cout<<s<<": wrong format"<<endl;
+                exit(EXIT_FAILURE);
+            }
+            c=s.at(newp);
+            string s1 = s.substr(p,newp-p);
+            p = newp+1;
+            int k1=getPosition(nodes,s1,0,pr->nbBranches+1);
+            if (k1!=-1){
+                mr.push_back(k1);
+            }
+            else{
+                cout<<"taxa "<<s1<<" not found"<<endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        if (mr.size()>0){ k=mrca(nodes,mr);}
+    }
+    return k;
+}
+
+int assignRecursive(int r,Node** nodes,int g){
+    vector<int> children = nodes[r]->suc;
+    int s = 0;
+    for (int i=0; i<children.size(); i++) {
+        if (nodes[children[i]]->rateGroup!=-1 && nodes[children[i]]->rateGroup!=g) {
+            nodes[children[i]]->rateGroup = g;
+            s+=1+assignRecursive(children[i],nodes,g);
+        }
+    }
+    return s;
+}
+
+int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g){
+    Pair* root = subtree->root;
+    int r = getInternalNodeId(pr,nodes,root->name);
+    int s = 0;
+    vector<int> supRoot;
+    for (int i=0; i<subtree->tips.size(); i++) {
+        Pair* tip = subtree->tips[i];
+        int t = getInternalNodeId(pr,nodes,tip->name);
+        if (tip->include) {
+            nodes[t]->rateGroup = g;
+            s++;
+        }
+        else{
+            nodes[t]->rateGroup = 0;
+            nodes[nodes[t]->P]->rateGroup = g;
+            s++;
+            vector<int> children = nodes[nodes[t]->P]->suc;
+            for (int j=0; j<children.size(); j++) {
+                if (children[j]!=t) {
+                    nodes[children[j]]->rateGroup=g;
+                    s++;
+                    supRoot.push_back(children[j]);
+                }
+            }
+        }
+    }
+    if (root->include) {
+        s += assignRecursive(r,nodes,g);
+    }
+    else{
+        vector<int> children = nodes[r]->suc;
+        for (int k=0; k<children.size(); k++) {
+            s += assignRecursive(children[k],nodes,g);
+        }
+    }
+    for (int j=0;j<supRoot.size();j++){
+        s+=assignRecursive(supRoot[j],nodes,g);
+    }
+    return s;
+}
+
+void assignRateGroupToTree(Pr* pr,Node** nodes){
+    vector<int> subroot;
+    for (int i=0; i<pr->ratePartition.size(); i++) {
+        Part* group = pr->ratePartition[i];
+        for (int j=0; j<group->subtrees.size(); j++) {
+            Pair* root = group->subtrees[j]->root;
+            int r = getInternalNodeId(pr,nodes,root->name);
+            if (contain(r,subroot)) {
+                cout<<"Warning: "<<group->name<<" there are overlapped subtrees in the partition file"<<endl;
+            }
+            else{
+                subroot.push_back(r);
+            }
+            if (root->include) {
+                nodes[r]->rateGroup = -1;
+            }
+            else{
+                vector<int> children = nodes[r]->suc;
+                for (int k=0; k<children.size(); k++) {
+                    nodes[children[k]]->rateGroup = -1;
+                }
+            }
+        }
+    }
+    double nbBranchesPartition = 0;
+    for (int i=0; i<pr->ratePartition.size(); i++) {
+        Part* group = pr->ratePartition[i];
+        for (int j=0; j<group->subtrees.size(); j++) {
+            Subtree* subtree = group->subtrees[j];
+            nbBranchesPartition += assignRateGroupToSubTree(subtree,pr,nodes,i+1);
+        }
+    }
+    for (int i=0; i<pr->ratePartition.size(); i++) {
+        Part* group = pr->ratePartition[i];
+        for (int j=0; j<group->subtrees.size(); j++) {
+            Pair* root = group->subtrees[j]->root;
+            int r = getInternalNodeId(pr,nodes,root->name);
+            if (root->include) {
+                nodes[r]->rateGroup = i+1;
+                nbBranchesPartition ++;
+            }
+            else{
+                vector<int> children = nodes[r]->suc;
+                for (int k=0; k<children.size(); k++) {
+                    nodes[children[k]]->rateGroup = i+1;
+                    nbBranchesPartition ++;
+                }
+            }
+        }
+    }
+    pr->multiplierRate = new double[1+pr->ratePartition.size()];
+    for (int i=0; i<=pr->ratePartition.size(); i++) {
+        pr->multiplierRate[i]=1;
+    }
+    if (nbBranchesPartition==pr->nbBranches) {
+        pr->multiplierRate[0]=-1;//Full partition
     }
 }

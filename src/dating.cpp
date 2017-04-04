@@ -124,7 +124,7 @@ void without_constraint(Pr* pr,Node** nodes){
     }
     for (int i =0;i<pr->nbINodes;i++) {
         if (!leaf(nodes[i])) {
-           nodes[i]->D = C[i]+X[i]/pr->rho;
+            nodes[i]->D = C[i]+X[i]/pr->rho;
         }
         
     }
@@ -237,35 +237,35 @@ list<double> computeLambda(list<int> active_set,Pr* pr,Node** nodes){
             ld.push_back(lambda[as[i]]);
         }
     }
-  /*  double sr=0;
-    for (int i=0; i<=pr->nbBranches; i++) {
-        if (nodes[i]->type!='p') {
-            double s=0;
-            if (i>0) {
-                s=-2*pr->rho*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
-            }
-            if (i<pr->nbINodes) {
-                for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
-                    int s1=*iter;
-                    s += 2*pr->rho*(nodes[s1]->B+pr->rho*nodes[i]->D-pr->rho*nodes[s1]->D)/nodes[s1]->V;
-                }
-            }
-            if (lower(nodes[i])){
-                s-=lambda[as[i]];
-            }
-            if (upper(nodes[i])){
-                s+=lambda[as[i]];
-            }
-            if (myabs(s)>1e-10) {
-                cout<<"TEST PROBLEM "<<i<<" "<<s<<" "<<nodes[i]->P<<endl;
-            }
-            
-        }
-        if (i>0) sr+=(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
-    }
-    if (myabs(sr)>1e-6) {
-        cout<<"TEST PROBLEM rho "<<sr<<endl;
-    }*/
+    /*  double sr=0;
+     for (int i=0; i<=pr->nbBranches; i++) {
+     if (nodes[i]->type!='p') {
+     double s=0;
+     if (i>0) {
+     s=-2*pr->rho*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
+     }
+     if (i<pr->nbINodes) {
+     for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
+     int s1=*iter;
+     s += 2*pr->rho*(nodes[s1]->B+pr->rho*nodes[i]->D-pr->rho*nodes[s1]->D)/nodes[s1]->V;
+     }
+     }
+     if (lower(nodes[i])){
+     s-=lambda[as[i]];
+     }
+     if (upper(nodes[i])){
+     s+=lambda[as[i]];
+     }
+     if (myabs(s)>1e-10) {
+     cout<<"TEST PROBLEM "<<i<<" "<<s<<" "<<nodes[i]->P<<endl;
+     }
+     
+     }
+     if (i>0) sr+=(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
+     }
+     if (myabs(sr)>1e-6) {
+     cout<<"TEST PROBLEM rho "<<sr<<endl;
+     }*/
     delete[] lambda;
     delete[] as;
     return ld;
@@ -335,17 +335,17 @@ void without_constraint_active_set(Pr* pr,Node** nodes){
         }
         for (int i=0;i<=pr->nbBranches;i++) D_old[i]=D_old[i]+alpha*dir[i];
         /*for (int i=0;i<=pr->nbBranches;i++){
-            if (nodes[i]->type=='l'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->lower<-1e-10) {
-                    cout<<"PROBLEM"<<endl;
-                }
-            }
-            if (nodes[i]->type=='u'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->upper>1e-10) {
-                    cout<<"PROBLEM"<<endl;
-                }
-            }
-        }*/
+         if (nodes[i]->type=='l'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->lower<-1e-10) {
+         cout<<"PROBLEM"<<endl;
+         }
+         }
+         if (nodes[i]->type=='u'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->upper>1e-10) {
+         cout<<"PROBLEM"<<endl;
+         }
+         }
+         }*/
         if (as!=0) {
             if (as>2*pr->nbBranches+1) {
                 active_set.push_back(-(as-2*pr->nbBranches-2));
@@ -414,18 +414,18 @@ void without_constraint_active_set_secondTime(Pr* pr,Node** nodes){
             desactive(nodes[-asrm]);
         }
         for (int i=0;i<=pr->nbBranches;i++) D_old[i]=D_old[i]+alpha*dir[i];
-       /* for (int i=0;i<=pr->nbBranches;i++){
-            if (nodes[i]->type=='l'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->lower<-1e-10) {
-                    cout<<"PROBLEM"<<endl;
-                }
-            }
-            if (nodes[i]->type=='u'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->upper>1e-10) {
-                    cout<<"PROBLEM"<<endl;
-                }
-            }
-        }*/
+        /* for (int i=0;i<=pr->nbBranches;i++){
+         if (nodes[i]->type=='l'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->lower<-1e-10) {
+         cout<<"PROBLEM"<<endl;
+         }
+         }
+         if (nodes[i]->type=='u'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->upper>1e-10) {
+         cout<<"PROBLEM"<<endl;
+         }
+         }
+         }*/
         if (as!=0) {
             if (as>2*pr->nbBranches+1) {
                 active_set.push_back(-(as-2*pr->nbBranches-2));
@@ -858,42 +858,42 @@ list<double> with_constraint(Pr* pr,Node** &nodes,list<int> active_set){
             }
         }
     }
-  /*
-    double sr=0;
-    for (int i=0; i<=pr->nbBranches; i++) {
-        if (nodes[i]->type!='p') {
-            double s=0;
-            if (i>0) {
-                s=-2*pr->rho*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
-            }
-            if (tc(nodes[i])) {
-                s-=lambda[as[i]];
-            }
-            if (lower(nodes[i])){
-                s-=lambda[as[i+pr->nbBranches+1]];
-            }
-            if (upper(nodes[i])){
-                s+=lambda[as[i+pr->nbBranches+1]];
-            }
-            if (i<pr->nbINodes) {
-                for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
-                    int s1=*iter;
-                    s+=2*pr->rho*(nodes[s1]->B+pr->rho*nodes[i]->D-pr->rho*nodes[s1]->D)/nodes[s1]->V;
-                    if (tc(nodes[s1])) {
-                        s+=lambda[as[s1]];
-                    }
-                }
-            }
-            if (myabs(s)>1e-10) {
-                cout<<"TEST  PROBLEM "<<i<<" "<<s<<" "<<nodes[i]->P<<endl;
-            }
-        }
-        if (i>0) sr+=(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
-    }
-    if (myabs(sr)>1e-6) {
-        cout<<"TEST  PROBLEM rho "<<sr<<endl;
-    }
-    */
+    /*
+     double sr=0;
+     for (int i=0; i<=pr->nbBranches; i++) {
+     if (nodes[i]->type!='p') {
+     double s=0;
+     if (i>0) {
+     s=-2*pr->rho*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
+     }
+     if (tc(nodes[i])) {
+     s-=lambda[as[i]];
+     }
+     if (lower(nodes[i])){
+     s-=lambda[as[i+pr->nbBranches+1]];
+     }
+     if (upper(nodes[i])){
+     s+=lambda[as[i+pr->nbBranches+1]];
+     }
+     if (i<pr->nbINodes) {
+     for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
+     int s1=*iter;
+     s+=2*pr->rho*(nodes[s1]->B+pr->rho*nodes[i]->D-pr->rho*nodes[s1]->D)/nodes[s1]->V;
+     if (tc(nodes[s1])) {
+     s+=lambda[as[s1]];
+     }
+     }
+     }
+     if (myabs(s)>1e-10) {
+     cout<<"TEST  PROBLEM "<<i<<" "<<s<<" "<<nodes[i]->P<<endl;
+     }
+     }
+     if (i>0) sr+=(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D))/nodes[i]->V;
+     }
+     if (myabs(sr)>1e-6) {
+     cout<<"TEST  PROBLEM rho "<<sr<<endl;
+     }
+     */
     for (int i=0;i<count;i++){
         if (myabs(lambda[i])<(10e-15))
             lambda[i]=0;
@@ -965,20 +965,20 @@ bool with_constraint_active_set(Pr* pr,Node** &nodes){
             }
             for (int i=0;i<=pr->nbBranches;i++) D_old[i]=D_old[i]+alpha*dir[i];
             /*for (int i=0;i<=pr->nbBranches;i++){
-                if (i>0 && D_old[i]-D_old[nodes[i]->P]<-1e-10) {
-                    cout<<"PROBLEM "<<i<<" "<<nodes[i]->P<<" "<<D_old[i]<<" "<<D_old[nodes[i]->P]<<endl;
-                }
-                if (nodes[i]->type=='l'||nodes[i]->type=='b') {
-                    if (D_old[i]-nodes[i]->lower<-1e-10) {
-                        cout<<"PROBLEM lower "<<i<<" "<<D_old[i]<<" "<<nodes[i]->lower<<endl;
-                    }
-                }
-                if (nodes[i]->type=='u'||nodes[i]->type=='b') {
-                    if (D_old[i]-nodes[i]->upper>1e-10) {
-                        cout<<"PROBLEM upper "<<i<<" "<<D_old[i]<<" "<<nodes[i]->upper<<endl;
-                    }
-                }
-            }*/
+             if (i>0 && D_old[i]-D_old[nodes[i]->P]<-1e-10) {
+             cout<<"PROBLEM "<<i<<" "<<nodes[i]->P<<" "<<D_old[i]<<" "<<D_old[nodes[i]->P]<<endl;
+             }
+             if (nodes[i]->type=='l'||nodes[i]->type=='b') {
+             if (D_old[i]-nodes[i]->lower<-1e-10) {
+             cout<<"PROBLEM lower "<<i<<" "<<D_old[i]<<" "<<nodes[i]->lower<<endl;
+             }
+             }
+             if (nodes[i]->type=='u'||nodes[i]->type=='b') {
+             if (D_old[i]-nodes[i]->upper>1e-10) {
+             cout<<"PROBLEM upper "<<i<<" "<<D_old[i]<<" "<<nodes[i]->upper<<endl;
+             }
+             }
+             }*/
             if (as<2*pr->nbBranches+2) {
                 if (as>pr->nbBranches) {
                     active_set.push_back(-(as-pr->nbBranches-1));
@@ -1065,21 +1065,21 @@ void with_constraint_active_set_secondTime(Pr* pr,Node** &nodes){
             }
         }
         for (int i=0;i<=pr->nbBranches;i++) D_old[i]=D_old[i]+alpha*dir[i];
-       /* for (int i=0;i<=pr->nbBranches;i++){
-            if (i>0 && D_old[i]-D_old[nodes[i]->P]<-1e-10) {
-                cout<<"PROBLEM "<<i<<" "<<nodes[i]->P<<" "<<D_old[i]<<" "<<D_old[nodes[i]->P]<<endl;
-            }
-            if (nodes[i]->type=='l'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->lower<-1e-10) {
-                    cout<<"PROBLEM lower "<<i<<" "<<D_old[i]<<" "<<nodes[i]->lower<<endl;
-                }
-            }
-            if (nodes[i]->type=='u'||nodes[i]->type=='b') {
-                if (D_old[i]-nodes[i]->upper>1e-10) {
-                    cout<<"PROBLEM upper "<<i<<" "<<D_old[i]<<" "<<nodes[i]->upper<<endl;
-                }
-            }
-        }*/
+        /* for (int i=0;i<=pr->nbBranches;i++){
+         if (i>0 && D_old[i]-D_old[nodes[i]->P]<-1e-10) {
+         cout<<"PROBLEM "<<i<<" "<<nodes[i]->P<<" "<<D_old[i]<<" "<<D_old[nodes[i]->P]<<endl;
+         }
+         if (nodes[i]->type=='l'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->lower<-1e-10) {
+         cout<<"PROBLEM lower "<<i<<" "<<D_old[i]<<" "<<nodes[i]->lower<<endl;
+         }
+         }
+         if (nodes[i]->type=='u'||nodes[i]->type=='b') {
+         if (D_old[i]-nodes[i]->upper>1e-10) {
+         cout<<"PROBLEM upper "<<i<<" "<<D_old[i]<<" "<<nodes[i]->upper<<endl;
+         }
+         }
+         }*/
         if (as<2*pr->nbBranches+2) {
             if (as>pr->nbBranches) {
                 active_set.push_back(-(as-pr->nbBranches-1));
@@ -1105,4 +1105,188 @@ void with_constraint_active_set_secondTime(Pr* pr,Node** &nodes){
     computeObjective(pr,nodes);
     delete[] D_old;
     delete[] dir;
+}
+
+// Multi rates
+
+
+void calculateMultiplier(Pr* pr,Node** nodes){
+    int nbG = pr->ratePartition.size()+1;
+    double* A =  new double[nbG];
+    double* B =  new double[nbG];
+    double* C =  new double[nbG];
+    for (int i=1;i<nbG;i++){
+        A[i] = 0;
+        B[i] = 0;
+        C[i] = 0;
+    }
+    for (int i=1; i<=pr->nbBranches; i++) {
+        int g = nodes[i]->rateGroup;
+        A[g] += pr->rho*pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->D-nodes[nodes[i]->P]->D)/nodes[i]->V;
+        B[g] += -2*nodes[i]->B*pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D)/nodes[i]->V;
+        C[g] += nodes[i]->B*nodes[i]->B/nodes[i]->V;
+    }
+    for (int i=1; i<nbG; i++) {
+        pr->multiplierRate[i] = -B[i]/2/A[i];
+        if (pr->multiplierRate[i]*pr->rho < pr->rho_min){
+            pr->multiplierRate[i] = pr->rho_min/pr->rho;
+        }
+        if (A[i]==0) {
+            pr->multiplierRate[i] = -1;
+        }
+    }
+}
+
+void without_constraint_multirates(Pr* pr,Node** nodes,bool reassign){
+    double* B = new double[pr->nbBranches+1];
+    double* V = new double[pr->nbBranches+1];
+    for (int i=1; i<=pr->nbBranches; i++) {
+        B[i] = nodes[i]->B;
+        V[i] = nodes[i]->V;
+    }
+    if (pr->ratePartition.size()>0){
+        if (reassign) assignRateGroupToTree(pr,nodes);
+        for (int r=1; r<=pr->nbBranches; r++) {
+            double m = pr->multiplierRate[nodes[r]->rateGroup];
+            //if (m<0) cout<<r<<"*"<<nodes[r]->rateGroup<<"*"<<m<<" ";
+            nodes[r]->B = B[r]/m;
+            nodes[r]->V = V[r]/m/m;
+        }
+    }//cout<<endl;
+    without_constraint_active_set(pr,nodes);
+    //cout<<pr->ratePartition.size()<<" "<<pr->objective<<endl;
+    if (pr->ratePartition.size()>0) {
+        /*cout<<"ROUND "<<0<<" "<<pr->objective<<" "<<pr->rho<<" ";
+        for (int i=1; i<=pr->ratePartition.size(); i++) {
+            cout<<pr->multiplierRate[i]*pr->rho<<"/"<<pr->multiplierRate[i]<<" ";
+        }
+        cout<<endl;*/
+        double old_phi = 0;
+        double old_rho = 0;
+        double* old_multi = new double[pr->ratePartition.size()+1];
+        old_multi[0] = 1;
+        int i= 1;
+        bool cont = false;
+        do {
+            old_phi = pr->objective;
+            old_rho = pr->rho;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                old_multi[r] = pr->multiplierRate[r];
+            }
+            for (int r=1; r<=pr->nbBranches; r++) {
+                nodes[r]->B = B[r];
+                nodes[r]->V = V[r];
+            }
+            calculateMultiplier(pr,nodes);
+            for (int r=1; r<=pr->nbBranches; r++) {
+                double m = pr->multiplierRate[nodes[r]->rateGroup];
+                nodes[r]->B = B[r]/m;
+                nodes[r]->V = V[r]/m/m;
+            }
+            without_constraint_active_set(pr,nodes);
+            cont = myabs((old_rho-pr->rho)/pr->rho) >= 1e-5;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                cont = cont || (pr->multiplierRate[r]>0 && myabs((old_multi[r]*old_rho-pr->multiplierRate[r]*pr->rho)/pr->multiplierRate[r]/pr->rho)>=1e-5);
+            }
+            /*printf("ROUND %d , objective function %.15e , rate %.15f/%.15f ",i,pr->objective,((old_rho-pr->rho)/pr->rho),pr->rho);
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                if (pr->multiplierRate[r]>0) printf(" %.15f/%.15f ",((old_multi[r]*old_rho-pr->multiplierRate[r]*pr->rho)/pr->multiplierRate[r]/pr->rho),pr->rho*pr->multiplierRate[r]);
+            }
+            cout<<endl;*/
+            i++;
+        } while (cont);
+        for (int i=1; i<=pr->nbBranches; i++) {
+            nodes[i]->B = B[i];
+            nodes[i]->V = V[i];
+        }
+        /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+        for (int r=1; r<=pr->ratePartition.size(); r++) {
+            if (pr->multiplierRate[r]>0) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+        }
+        cout<<endl;*/
+    }
+    delete[] B;
+    delete[] V;
+}
+
+bool with_constraint_multirates(Pr* pr,Node** nodes,bool reassign){
+    double* B = new double[pr->nbBranches+1];
+    double* V = new double[pr->nbBranches+1];
+    for (int i=1; i<=pr->nbBranches; i++) {
+        B[i] = nodes[i]->B;
+        V[i] = nodes[i]->V;
+    }
+    if (pr->ratePartition.size()>0){
+        if (reassign) assignRateGroupToTree(pr,nodes);
+        for (int r=1; r<=pr->nbBranches; r++) {
+            double m = pr->multiplierRate[nodes[r]->rateGroup];
+            if (m<0) cout<<nodes[r]->rateGroup<<" "<<m<<endl;
+            nodes[r]->B = B[r]/m;
+            nodes[r]->V = V[r]/m/m;
+        }
+    }
+    bool consistent = with_constraint_active_set(pr,nodes);
+    if (pr->ratePartition.size()>0) {
+        /*printf("ROUND 0 , objective function %.15e , rate %.15f ",pr->objective,pr->rho);
+        for (int r=1; r<=pr->ratePartition.size(); r++) {
+            if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+        }
+        cout<<endl;*/
+        double old_phi = 0;
+        double old_rho = 0;
+        double* old_multi = new double[pr->ratePartition.size()+1];
+        old_multi[0]=1;
+        int i= 1;
+        bool bl = false;
+        bool cont = false;
+        do {
+            old_phi = pr->objective;
+            old_rho = pr->rho;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                old_multi[r] = pr->multiplierRate[r];
+            }
+            for (int r=1; r<=pr->nbBranches; r++) {
+                nodes[r]->B = B[r];
+                nodes[r]->V = V[r];
+            }
+            calculateMultiplier(pr,nodes);
+            for (int r=1; r<=pr->nbBranches; r++) {
+                double m = pr->multiplierRate[nodes[r]->rateGroup];
+                nodes[r]->B = B[r]/m;
+                nodes[r]->V = V[r]/m/m;
+            }
+            if (!bl) {
+                without_constraint_active_set(pr,nodes);
+                bl = myabs((old_rho-pr->rho)/pr->rho)<=1e-4;
+                for (int r=1; r<=pr->ratePartition.size(); r++) {
+                    bl = bl && (pr->multiplierRate[r]<0 || myabs((old_multi[r]*old_rho-pr->multiplierRate[r]*pr->rho)/pr->multiplierRate[r]/pr->rho)<=1e-4);
+                }
+            }
+            else {
+                consistent = with_constraint_active_set(pr,nodes);
+            }
+            cont = myabs((old_rho-pr->rho)/pr->rho) >= 1e-5;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                cont = cont || (pr->multiplierRate[r]>0 && myabs((old_multi[r]*old_rho-pr->multiplierRate[r]*pr->rho)/pr->multiplierRate[r]/pr->rho)>=1e-5);
+            }
+            /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+            }
+            cout<<endl;*/
+             i++;
+        } while (cont);
+        for (int r=1; r<=pr->nbBranches; r++) {
+            nodes[r]->B = B[r];
+            nodes[r]->V = V[r];
+        }
+        /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+        for (int r=1; r<=pr->ratePartition.size(); r++) {
+            if (pr->multiplierRate[r]>0) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+        }
+        cout<<endl;*/
+    }
+    delete[] B;
+    delete[] V;
+    return consistent;
 }

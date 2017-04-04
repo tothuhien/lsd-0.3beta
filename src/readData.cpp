@@ -63,6 +63,9 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
     }  while (a>0);
     nodes[0]->P=-1;
     nodes[0]->B=-1;
+    while (c!='\n') {
+        c=readChar(tree,"input tree");
+    }
     if (nbChild==2) {
         pr->rooted=true;
     }
@@ -78,11 +81,11 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
     }
     for (int i=0;i<ino;i++){
         string s=readWord(dateFile,pr->inDateFile);
-        int k = getPosition(nodes,s,0,pr->nbBranches+1);
-        vector<int> mr;
         int type='n';
         double v1=0;
         double v2=0;
+        int k = getPosition(nodes,s,0,pr->nbBranches+1);
+        vector<int> mr;
         if (k==-1 && (s.compare("mrca")==0)){
             char c='(';
             while (c!=')'){
@@ -178,6 +181,50 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
     }
     fclose(dateFile);
     return s;
+}
+
+
+void readPartitionFile(Pr* pr){
+    //Read partition file
+    ifstream partFile(pr->partitionFile.c_str());
+    string line;
+    while (getline(partFile,line)) {
+        int pos=0;
+        string groupName = readWord(line,pos);
+        int s = line.find_first_of("{",0);
+        int e = line.find_first_of ("}",s+1);
+        Part* part = new Part(groupName);
+        while (s<e && s!=-1) {
+            string term = line.substr(s+1,(e-s-1));
+            int ss = 0;
+            int ee = ss;
+            Subtree* subtree;
+            bool first = true;
+            while (ee!=term.length()) {
+                Pair* node;
+                ss = firstCharacter(term,ss);
+                ee = lastCharacter(term,ss);
+                if (term.at(ss)=='[' && term.at(ee-1)==']') {
+                    node = new Pair(true,term.substr(ss+1,ee-ss-2));
+                }
+                else {
+                    node = new Pair(false,term.substr(ss,ee-ss));
+                }
+                if (first) {
+                    subtree = new Subtree(node);
+                    first=false;
+                }
+                else{
+                    subtree->tips.push_back(node);
+                }
+                ss=ee+1;
+            }
+            part->subtrees.push_back(subtree);
+            s = line.find_first_of("{",e+1);
+            e = line.find_first_of("}",s+1);
+        }
+        pr->ratePartition.push_back(part);
+    }
 }
 
 int tree2dataS(FILE * tree,Pr* pr,Node** nodes){

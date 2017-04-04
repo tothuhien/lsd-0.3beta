@@ -31,8 +31,10 @@ Pr* getCommandLine( int argc, char** argv)
     bool iflag = false,
     dflag = false,
     flagA=false,
-    flagZ=false;
-    while ( (c = getopt(argc, argv, ":i:d:o:s:n:g:r:v:ct:w:b:ha:z:f:k")) != -1 )
+    flagZ=false,
+    sflag=false,
+    fflag=false;
+    while ( (c = getopt(argc, argv, ":i:d:o:s:n:g:r:v:ct:w:b:ha:z:f:kp:")) != -1 )
     {
         switch (c)
         {
@@ -48,6 +50,11 @@ Pr* getCommandLine( int argc, char** argv)
                 opt->inDateFile = optarg;
                 dflag = true;
                 break;
+            case 'p':
+                if( access( optarg, R_OK )!=0 )
+                    myExit( "Cannot read the file named \"%s\"\n", optarg );
+                opt->partitionFile = optarg;
+                break;
             case 'o':
                 opt->outFile = optarg;
                 break;
@@ -57,6 +64,7 @@ Pr* getCommandLine( int argc, char** argv)
                 opt->seqLength = atoi(optarg);
                 if( opt->seqLength<1 )
                     myExit("Argument of option -s must be strictly positive.\n");
+                sflag = true;
                 break;
             case 'n':
                 if( !isInteger(optarg) )
@@ -71,10 +79,10 @@ Pr* getCommandLine( int argc, char** argv)
                 opt->fnOutgroup = optarg;
                 break;
             case 'k':
-   		if (opt->fnOutgroup!=""){
+                if (opt->fnOutgroup!=""){
                 	opt->keepOutgroup=true;
                 	opt->estimate_root="k";
-		}
+                }
                 break;
             case 'r':
                 opt->estimate_root = optarg;
@@ -135,6 +143,7 @@ Pr* getCommandLine( int argc, char** argv)
                 if (opt->nbSampling<0)
                     myExit("Argument of option -f must be a positive integer.\n");
                 opt->ci=true;
+                fflag = true;
                 break;
             case '?':
                 myExit("Unrecognized option: -%c\n", optopt);
@@ -146,12 +155,12 @@ Pr* getCommandLine( int argc, char** argv)
         }
     }
     if( !(iflag) )
-        myExit("Argument -i is necessary to continue...\n");
+        myExit("Argument -i is necessary to continue.\n");
     if (!dflag && (flagA && !flagZ)){
-        myExit("The input date file is not provided, so option -z is needed to use with option -a to estimate relative dates.\n");
+        myExit("The input date file is not provided, so option -z is required to use with option -a to estimate relative dates.\n");
     }
     if (!dflag && (!flagA && flagZ)){
-        myExit("The input date file is not provided, so option -a is needed to use with option -z to estimate relative dates.\n");
+        myExit("The input date file is not provided, so option -a is required to use with option -z to estimate relative dates.\n");
     }
     if (!dflag && (!flagA && !flagZ)){
         opt->relative=true;
@@ -162,6 +171,9 @@ Pr* getCommandLine( int argc, char** argv)
         if (opt->mrca >= opt->leaves)
             myExit("The root date must be strictly smaller than the tips date.\n");
         opt->relative=true;
+    }
+    if (fflag && !sflag) {
+        myExit("Argument -s is required to calculate confidence intervals.\n");
     }
     if (dflag)
         opt->relative=false;
@@ -225,14 +237,34 @@ Pr* getInterface()
         opt->estimate_root="a";
     }
     char letter2[3];
+    bool sflag = false;
+    bool fflag = true;
+    bool vflag = true;
+    bool cont = true;
     do
     {
         printInterface( stdout, opt );
         cout<<endl;
         fgets( letter2, 3, stdin );
-        if( isOptionActivate( opt, *letter2 ) )
+        if( isOptionActivate( opt, *letter2 ) ){
             setOptionsWithLetter( opt, *letter2);
-    } while( *letter2!='y' && *letter2!='Y' );
+            if (*letter2=='s' || *letter2=='S') sflag = true;
+            if ((*letter2=='y' || *letter2=='Y')){
+                if ((opt->ci || opt->variance) && !sflag){
+                    do{
+                        cout<<"Sequence length is required but not specified by option S. Do you want to take the default value 1000? y/n"<<endl;
+                        fgets( letter2, 3, stdin );
+                    }  while (*letter2!='y' && *letter2!='Y' && *letter2!='n' && *letter2 != 'N');
+                    if ((*letter2=='y' || *letter2=='Y')) cont = false;
+                    else if ((*letter2=='n' || *letter2=='N')){
+                        setOptionsWithLetter( opt, 'S');
+                        sflag = true;
+                    }
+                }
+                else cont = false;
+            }
+        }
+    } while( cont );
     return opt;
 }
 
@@ -246,6 +278,9 @@ void printInterface( FILE* in, Pr* opt)
         fprintf(in,"  D                         Estimate relative dates : mrca date = %.2f, tips date =%.2f\n",opt->mrca,opt->leaves);
     else
         fprintf(in,"  D                                 Input date file : %s\n",opt->inDateFile.c_str());
+    fprintf(in,"  P                                  Partition file : ");
+    if (opt->partitionFile=="")        fprintf(in,"No\n");
+    else fprintf(in,"%s\n",opt->partitionFile.c_str());
     fprintf(in,"Output file:\n");
     fprintf(in,"  O                                    Output file  : %s\n",opt->outFile.c_str());
     fprintf(in,"Parameters:\n");
@@ -261,8 +296,8 @@ void printInterface( FILE* in, Pr* opt)
         if (opt->variance==1) fprintf(in,"Yes, use variances based on original branches\n");
         else if (opt->variance==2) fprintf(in,"Yes, use variances based on branches estimated by LSD\n");
         fprintf(in,"  B                          Parameter of variances : %d\n",opt->c);
-        fprintf(in,"  S                                 Sequence Length : %i\n",opt->seqLength);
     }
+    fprintf(in,"  S                                 Sequence Length : %i\n",opt->seqLength);
     fprintf(in,"  R                               Estimate the root : ");
     if (opt->estimate_root==""){
         fprintf(in,"No\n");
@@ -383,6 +418,18 @@ void printHelp( void )
            FLAT"\t   The number of trees that you want to read.\n"
            FLAT"\t" BOLD"-o " LINE"outputFile\n"
            FLAT"\t   The base name of the output files to write the results and the time-scale trees.\n"
+           FLAT"\t" BOLD"-p " LINE"partitionFile\n"
+           FLAT"\t   The file that specifies the branche partition when the input phylogeny has more than one  substitution rate. In the partition file, each\n"
+           FLAT"\t   line contains the name of one part and a list of subtrees whose branches are supposed to have the same substitution rate. Every branch that\n"
+           FLAT"\t   is not defined to any subtree will have a same rate which is different from the ones defined in the partition file. A subtree is defined between\n"
+           FLAT"\t   {}: its first term corresponds to the root of the subtree, and the following terms (if there any) correspond to the tips of the subtree. If \n"
+           FLAT"\t   the tips of the subtree are not defined (so there's only the defined root), then by default this subtree is extended down to the tips\n"
+           FLAT"\t   of the full tree. For example the input tree has topology ((A,B)n1,(C,D)n2)n3,((E,F)n4,G)n5)n0 and you have the following partition file:\n"
+           FLAT"\t         group1 {n1} {n5 n4}\n"
+           FLAT"\t         group2 {n2}\n"
+           FLAT"\t   then there are 3 rates: the first one is the rate on the branches (n1,A), (n1,B), (n5,n4), (n5,G), the second one is the rate on the\n"
+           FLAT"\t   branches (n2,C), (n2,D), and the last one is the rate on the remaining branches of the tree. Note that if the internal nodes don't have labels,\n"
+           FLAT"\t   then they can be defined by mrca of at least two tips, for example n1 is mrca(A,B)\n."
            FLAT"\t" BOLD"-r " LINE"rootingMethod\n"
            FLAT"\t   This option is used to specify the rooting method to estimate the position of the root for unrooted trees, or\n"
            FLAT"\t   re-estimate the root for rooted trees. The principle is to search for the position of the root that minimizes\n"
@@ -523,6 +570,8 @@ bool isOptionActivate( Pr* opt, char l )
         case 'D':
         case 'o':
         case 'O':
+        case 'p':
+        case 'P':
         case 's':
         case 'S':
         case 'c':
@@ -551,7 +600,7 @@ bool isOptionActivate( Pr* opt, char l )
         case 'Q':
         case 'h':
         case 'H':
-            return true;
+        return true;
     }
     return false;
 }
@@ -602,6 +651,10 @@ void setOptionsWithLetter( Pr* opt, char letter )
                     opt->relative=false;
                 }
             } while (*letter!='n' && *letter!='N' && *letter!='y' && *letter!='Y');
+            break;
+        case 'p':
+        case 'P':
+            opt->partitionFile = getInputFileName("Enter your Partition File name> ");
             break;
         case 's':
         case 'S':
@@ -713,7 +766,7 @@ void setOptionsWithLetter( Pr* opt, char letter )
         case 'f':
         case 'F':
             if (!opt->ci) {
-                opt->nbSampling = getInputInteger("Enter the number of samplings> ");
+                opt->nbSampling = getInputInteger("Enter the number of sampling> ");
                 opt->ci=true;
             }
             else{

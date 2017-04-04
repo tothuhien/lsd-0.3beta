@@ -37,3 +37,8 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes);
 
 int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes);
 
+void calculateMultiplier_lambda(int r,int p_r,double br,Pr* pr,Node** nodes,bool* nan);
+
+bool without_constraint_active_set_lambda_multirates(double br,Pr* pr,Node** nodes,bool reassign);
+
+bool with_constraint_active_set_lambda_multirates(double br,Pr* pr,Node** nodes,bool reassign);

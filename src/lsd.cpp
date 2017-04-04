@@ -72,10 +72,14 @@ int main( int argc, char** argv ){
     }
     bool constraintConsistent=true;
     int s=0;
+    if (opt->partitionFile!="") {
+        cout<<"Reading partition file"<<endl;
+        readPartitionFile(opt);
+    }
     for (int y=1;y<=opt->nbData;y++){
         fprintf(result,"Tree %d ",y);
-        cout<<"Reading the tree "<<y<< "..."<<endl;
-        opt->init();
+        cout<<"Reading the tree "<<y<<endl;
+        opt->initConstraints();
         if (!opt->relative) s=tree2data(tree,opt,nodes,constraintConsistent);
         else s=tree2dataS(tree,opt,nodes);
         if (!opt->rooted){
@@ -100,7 +104,8 @@ int main( int argc, char** argv ){
         if (!opt->constraint){//LD without constraints
             if (opt->estimate_root==""){//keep the given root
                 if (constraintConsistent){
-                    without_constraint_active_set(opt,nodes);
+                    cout<<"Dating without temporal constraints ..."<<endl;
+                    without_constraint_multirates(opt,nodes,true);
                     output(br,y,opt,nodes,result,tree1,tree2,tree3);
                 }
                 else{
@@ -108,6 +113,7 @@ int main( int argc, char** argv ){
                 }
             }
             else if (opt->estimate_root=="k"){
+                cout<<"Estimating the root position on the branch defined by given outgroups ..."<<endl;
                 double br=0;
                 vector<int>::iterator iter=nodes[0]->suc.begin();
                 int s1=(*iter);
@@ -116,16 +122,18 @@ int main( int argc, char** argv ){
                 br=nodes[s1]->B+nodes[s2]->B;
                 nodes[s1]->V=variance(opt,br);
                 nodes[s2]->V=nodes[s1]->V;
-                without_constraint_active_set_lambda(br,opt,nodes);
+                without_constraint_active_set_lambda_multirates(br,opt,nodes,true);
                 //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                 output(br,y,opt,nodes,result,tree1,tree2,tree3);
             }
             else{//estimate the root
                 int r;
                 if (opt->estimate_root.compare("l")==0){//improve locally the root around the given root
+                    cout<<"Estimating the root position locally around the given root ..."<<endl;
                     r=estimate_root_without_constraint_local_rooted(opt,nodes);
                 }
                 else{ //forget the given root and re-estimate the position of the root over all branhces
+                    cout<<"Estimating the root position on all branches ..."<<endl;
                     r=estimate_root_without_constraint_rooted(opt,nodes);
                 }
                 if (r!=0){
@@ -138,7 +146,7 @@ int main( int argc, char** argv ){
                         nodes_new[i]->status=nodes[i]->status;
                     }
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
-                    without_constraint_active_set_lambda(br,opt,nodes_new);
+                    without_constraint_active_set_lambda_multirates(br,opt,nodes_new,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
                     for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];
@@ -150,7 +158,8 @@ int main( int argc, char** argv ){
         else {//QPD with temporal constrains
                 if (opt->estimate_root==""){//keep the given root
                 if (constraintConsistent){
-                    bool consistent=with_constraint_active_set(opt,nodes);
+                    cout<<"Dating under temporal constraints mode ..."<<endl;
+                    bool consistent = with_constraint_multirates(opt,nodes,true);
                     if (consistent) {
                         output(br,y,opt,nodes,result,tree1,tree2,tree3);
                     }
@@ -163,6 +172,7 @@ int main( int argc, char** argv ){
                 }
             }
             else if (opt->estimate_root=="k"){
+                    cout<<"Estimating the root position on the branch defined by given outgroups ..."<<endl;
                     double br=0;
                     vector<int>::iterator iter=nodes[0]->suc.begin();
                     int s1=(*iter);
@@ -171,19 +181,22 @@ int main( int argc, char** argv ){
                     br=nodes[s1]->B+nodes[s2]->B;
                     nodes[s1]->V=variance(opt,br);
                     nodes[s2]->V=nodes[s1]->V;
-                    with_constraint_active_set_lambda(br,opt,nodes);
+                    with_constraint_active_set_lambda_multirates(br,opt,nodes,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes,result,tree1,tree2,tree3);
             }
             else{//estimate the root
                 int r;
                 if (opt->estimate_root.compare("l")==0){//improve locally the root around the given root
+                    cout<<"Estimating the root position locally around the given root ..."<<endl;
                     r=estimate_root_with_constraint_local_rooted(opt,nodes);
                 }
                 else if (opt->estimate_root.compare("a")==0){ //forget the given root and re-estimate the position of the root over all branhces
+                    cout<<"Estimating the root position on all branches using fast method ..."<<endl;
                     r=estimate_root_with_constraint_fast_rooted(opt,nodes);
                 }
                 else{ //forget the given root and re-estimate the position of the root over all branhces
+                    cout<<"Estimating the root position on all branches ..."<<endl;
                     r=estimate_root_with_constraint_rooted(opt,nodes);
                 }
                 if (r>0){
@@ -196,7 +209,7 @@ int main( int argc, char** argv ){
                         nodes_new[i]->status=nodes[i]->status;
                     }
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
-                    with_constraint_active_set_lambda(br,opt,nodes_new);
+                    with_constraint_active_set_lambda_multirates(br,opt,nodes_new,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
                     output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
                     for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];

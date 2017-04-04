@@ -1304,16 +1304,20 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
     int s2=(*iter);
     double br=0;
     int r=0;
+    double* multiplier = new double[pr->ratePartition.size()+1];
     cout<<"Optimizing the root position on the original branch "<<s1<<" ... ";
     bool bl = reroot_rootedtree(br,s1,s1,s2,pr,nodes,nodes_new);
     if (bl){
-        bool consistent=without_constraint_active_set_lambda(br,pr,nodes_new);
+        bool consistent=without_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
         if (consistent) {
             cv[s1]=pr->objective;
             printf("%.10f\n",cv[s1]);
             cv[s2]=cv[s1];
             phi1=cv[s1];
             r=s1;
+            for (int i=1; i<=pr->ratePartition.size(); i++) {
+                multiplier[i] = pr->multiplierRate[i];
+            }
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1341,7 +1345,7 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
         bl=reroot_rootedtree(br,i,s1,s2,pr,nodes,nodes_new);
         cout<<"Optimizing the root position on the branch "<<i<<" ... ";
         if (bl){
-            bool consistent=without_constraint_active_set_lambda(br,pr,nodes_new);
+            bool consistent=without_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
             if (consistent) {
                 cv[i]=pr->objective;
                 printf("%.10f\n",cv[i]);
@@ -1353,6 +1357,9 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
                     }
                     if (cv[i]<phi1 || r==0){
                         phi1=cv[i];r=i;
+                        for (int i=1; i<=pr->ratePartition.size(); i++) {
+                            multiplier[i] = pr->multiplierRate[i];
+                        }
                     }
                 }
             }
@@ -1381,6 +1388,10 @@ int estimate_root_without_constraint_local_rooted(Pr* pr,Node** nodes){
     delete[] cv;
     for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
+    for (int i=1; i<=pr->ratePartition.size(); i++) {
+        pr->multiplierRate[i] = multiplier[i];
+    }
+    delete[] multiplier;
     return r;
 }
 
@@ -1397,14 +1408,18 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
     int s1=(*iter);
     iter++;
     int s2=(*iter);
+    double* multiplier = new double[pr->ratePartition.size()+1];
     cout<<"Optimizing the root position on the branch "<<y<<" ... ";
     bool bl=reroot_rootedtree(br,y,s1,s2,pr,nodes,nodes_new);
     if (bl){
-        bool consistent=without_constraint_active_set_lambda(br,pr,nodes_new);
+        bool consistent=without_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
         if (consistent) {
             phi1=pr->objective;
             printf("%.10f\n",phi1);
             r=y;
+            for (int i=1; i<=pr->ratePartition.size(); i++) {
+                multiplier[i] = pr->multiplierRate[i];
+            }
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1422,13 +1437,16 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
         cout<<"Optimizing the root position on the branch "<<y<<" ... ";
         bl=reroot_rootedtree(br,y,s1,s2,pr,nodes,nodes_new);
         if (bl){
-            bool consistent=without_constraint_active_set_lambda(br,pr,nodes_new);
+            bool consistent=without_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
             if (consistent) {
                 phi=pr->objective;
                 printf("%.10f\n",phi);
                 if (phi1>phi || r==0){
                     phi1=phi;
                     r=y;
+                    for (int i=1; i<=pr->ratePartition.size(); i++) {
+                        multiplier[i] = pr->multiplierRate[i];
+                    }
                 }
             }
             else{
@@ -1445,6 +1463,10 @@ int estimate_root_without_constraint_rooted(Pr* pr,Node** &nodes){
     else cout<<"The new root is on the branch "<<r<<endl;
     for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
+    for (int i=1; i<=pr->ratePartition.size(); i++) {
+        pr->multiplierRate[i] = multiplier[i];
+    }
+    delete[] multiplier;
     return r;
 }
 
@@ -1463,16 +1485,20 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
     double br=0;
     int r=0;
     double phi1;
+    double* multiplier = new double[pr->ratePartition.size()+1];
     cout<<"Optimizing the root position on the original branch "<<s1<<" ... ";
     bool bl = reroot_rootedtree(br,s1,s1,s2,pr,nodes,nodes_new);
     if (bl){
-        bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+        bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
         if (consistent){
             cv[s1]=pr->objective;
             printf("%.10f\n",cv[s1]);
             cv[s2]=cv[s1];
             r=s1;
             phi1=cv[s1];
+            for (int i=1; i<=pr->ratePartition.size(); i++) {
+                multiplier[i] = pr->multiplierRate[i];
+            }
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1500,7 +1526,7 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
         cout<<"Optimizing the root position on the branch "<<i<<" ... ";
         bl=reroot_rootedtree(br,i,s1,s2,pr,nodes,nodes_new);
         if (bl){
-            bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+            bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
             if (consistent){
                 cv[i]=pr->objective;
                 printf("%.10f \n",cv[i]);
@@ -1512,6 +1538,9 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
                     }
                     if (cv[i]<phi1 || r==0){
                         phi1=cv[i];r=i;
+                        for (int i=1; i<=pr->ratePartition.size(); i++) {
+                            multiplier[i] = pr->multiplierRate[i];
+                        }
                     }
                 }
             }
@@ -1540,6 +1569,10 @@ int estimate_root_with_constraint_local_rooted(Pr* pr,Node** nodes){
     delete[] cv;
     for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
+    for (int i=1; i<=pr->ratePartition.size(); i++) {
+        pr->multiplierRate[i] = multiplier[i];
+    }
+    delete[] multiplier;
     return r;
 }
 
@@ -1551,6 +1584,7 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
     int s01=(*iter);
     iter++;
     int s02=(*iter);
+    double* multiplier = new double[pr->ratePartition.size()+1];
     cout<<"Pre-estimating the position of the root without using temporal constraints ..."<<endl;
     int r=estimate_root_without_constraint_rooted(pr,nodes);
     cout<<"Re-estimating the position of the root with temporal constraints around the pre-estimated root ..."<<endl;
@@ -1567,11 +1601,14 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
         cout<<"Optimizing the root position on the branch "<<r<<" ... ";
         bool bl=reroot_rootedtree(br,r,s01,s02,pr,nodes,nodes_new,P_ref,tab);
         if (bl){
-            bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+            bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
             if (consistent){
                 cv[r]=pr->objective;
                 printf("%.10f\n",cv[r]);
                 phi1=cv[r];
+                for (int i=1; i<=pr->ratePartition.size(); i++) {
+                    multiplier[i] = pr->multiplierRate[i];
+                }
             }
             else{
                 printf("Temporal constraints conflict\n");
@@ -1603,7 +1640,7 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
             cout<<"Optimizing the root position on the branch "<<e<<" ... ";
             bl=reroot_rootedtree(br,e,s01,s02,pr,nodes,nodes_new);
             if (bl){
-                bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+                bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
                 if (consistent){
                     cv[e]=pr->objective;
                     printf("%.10f\n",cv[e]);
@@ -1614,6 +1651,9 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
                         }
                         if (cv[i]<phi1 || r==0){
                             phi1=cv[e];r=e;
+                            for (int i=1; i<=pr->ratePartition.size(); i++) {
+                                multiplier[i] = pr->multiplierRate[i];
+                            }
                         }
                     }
                 }
@@ -1643,6 +1683,10 @@ int estimate_root_with_constraint_fast_rooted(Pr* pr,Node** nodes){
         delete[] Suc2_ref;
         for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
         delete[] nodes_new;
+        for (int i=1; i<=pr->ratePartition.size(); i++) {
+            pr->multiplierRate[i] = multiplier[i];
+        }
+        delete[] multiplier;
     }
     return r;
 }
@@ -1657,6 +1701,7 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     double phi1;
     double phi;
     int r=0;
+    double* multiplier = new double[pr->ratePartition.size()+1];
     vector<int>::iterator iter=nodes[0]->suc.begin();
     int s1=(*iter);
     iter++;
@@ -1664,11 +1709,14 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     cout<<"Optimizing the root position on the branch "<<y<<" ... ";
     bool bl=reroot_rootedtree(br,y,s1,s2,pr,nodes,nodes_new);
     if (bl){
-        bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+        bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
         if (consistent){
             printf("%.10f\n",pr->objective);
             r=y;
             phi1=pr->objective;
+            for (int i=1; i<=pr->ratePartition.size(); i++) {
+                multiplier[i] = pr->multiplierRate[i];
+            }
         }
         else{
             printf("Temporal constraints conflict\n");
@@ -1685,13 +1733,16 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
         cout<<"Optimizing the root position on the branch "<<y<<" ... ";
         bl=reroot_rootedtree(br,y,s1,s2,pr,nodes,nodes_new);
         if (bl){
-            bool consistent=with_constraint_active_set_lambda(br,pr,nodes_new);
+            bool consistent=with_constraint_active_set_lambda_multirates(br,pr,nodes_new,true);
             if (consistent){
                 phi=pr->objective;
                 printf("%.10f\n",phi);
                 if (phi1>phi  || r==0){
                     phi1=phi;
                     r=y;
+                    for (int i=1; i<=pr->ratePartition.size(); i++) {
+                        multiplier[i] = pr->multiplierRate[i];
+                    }
                 }
             }
             else{
@@ -1708,5 +1759,219 @@ int estimate_root_with_constraint_rooted(Pr* pr,Node** nodes){
     else cout<<"The new root is on the branch "<<r<<endl;
     for (int i=0;i<pr->nbBranches+1;i++) delete nodes_new[i];
     delete[] nodes_new;
+    for (int i=1; i<=pr->ratePartition.size(); i++) {
+        pr->multiplierRate[i] = multiplier[i];
+    }
+    delete[] multiplier;
     return r;
+}
+
+
+void calculateMultiplier_lambda(int r,int p_r,double br,Pr* pr,Node** nodes,bool* nan){
+    int nbG = pr->ratePartition.size()+1;
+    double* A =  new double[nbG];
+    double* B =  new double[nbG];
+    for (int i=1;i<nbG;i++){
+        A[i] = 0;
+        B[i] = 0;
+    }
+    int g = nodes[r]->rateGroup;
+    A[g] += pr->rho*pr->rho*(nodes[r]->D+nodes[p_r]->D-2*nodes[0]->D)*(nodes[r]->D+nodes[p_r]->D-2*nodes[0]->D)/nodes[r]->V;
+    B[g] += -2*br*pr->rho*(nodes[r]->D+nodes[p_r]->D-2*nodes[0]->D)/nodes[r]->V;
+    for (int i=1; i<=pr->nbBranches; i++) {
+        g = nodes[i]->rateGroup;
+        if (i!=r && i!=p_r) {
+            A[g] += pr->rho*pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D)*(nodes[i]->D-nodes[nodes[i]->P]->D)/nodes[i]->V;
+            B[g] += -2*nodes[i]->B*pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D)/nodes[i]->V;
+        }
+    }
+    for (int i=1; i<nbG; i++) {
+        pr->multiplierRate[i] = -B[i]/2/A[i];
+        if (pr->multiplierRate[i]*pr->rho < pr->rho_min){
+            pr->multiplierRate[i] = pr->rho_min/pr->rho;
+        }
+        if (A[i]==0) {
+            nan[i]=true;
+        }
+    }
+}
+
+bool without_constraint_active_set_lambda_multirates(double br,Pr* pr,Node** nodes,bool reassign){
+    vector<int>::iterator iter=nodes[0]->suc.begin();    
+    int r=(*iter);//r=r1
+    iter++;
+    int p_r=(*iter);//pr=r2
+    double* B = new double[pr->nbBranches+1];
+    double* V = new double[pr->nbBranches+1];
+    double Br = br;
+    for (int i=1; i<=pr->nbBranches; i++) {
+        B[i] = nodes[i]->B;
+        V[i] = nodes[i]->V;
+    }
+    if (pr->ratePartition.size()>0){
+        if (reassign) assignRateGroupToTree(pr,nodes);
+        for (int i=1; i<=pr->nbBranches; i++) {
+            if (i!=r && i!=p_r) {
+                double m = pr->multiplierRate[nodes[i]->rateGroup];
+                nodes[i]->B = B[i]/m;
+                nodes[i]->V = V[i]/m/m;
+            }
+        }
+        br = br/pr->multiplierRate[nodes[r]->rateGroup];
+    }
+    bool consistent = without_constraint_active_set_lambda(br,pr,nodes);
+    if (pr->ratePartition.size()>0) {
+        vector<int>::iterator iter=nodes[0]->suc.begin();
+        bool* nan = new bool[pr->ratePartition.size()+1];
+        for (int i=1; i<=pr->ratePartition.size(); i++){
+            nan[i] = false;
+        }
+        /*printf("ROUND 0 , objective function %.15e , rate %.15f ",pr->objective,pr->rho);
+        for (int r=1; r<=pr->ratePartition.size(); r++) {
+            if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+        }
+        cout<<endl;*/
+        double old_phi = 0;
+        double old_rho = 0;
+        double* old_multi = new double[pr->ratePartition.size()+1];
+        old_multi[0]=1;
+        int i= 1;
+        bool cont = false;
+        do {
+            old_phi = pr->objective;
+            old_rho = pr->rho;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                old_multi[r] = pr->multiplierRate[r];
+            }
+            br = Br;
+            for (int r=1; r<=pr->nbBranches; r++) {
+                nodes[r]->B = B[r];
+                nodes[r]->V = V[r];
+            }
+            calculateMultiplier_lambda(r,p_r,br,pr,nodes,nan);
+            br = br/pr->multiplierRate[nodes[r]->rateGroup];
+            for (int j=1; j<=pr->nbBranches; j++) {
+                double m = pr->multiplierRate[nodes[j]->rateGroup];
+                nodes[j]->B = B[j]/m;
+                nodes[j]->V = V[j]/m/m;
+            }
+            consistent = without_constraint_active_set_lambda(br,pr,nodes);
+            cont = myabs((old_rho-pr->rho)/pr->rho) >= 1e-5;
+            for (int j=1; j<=pr->ratePartition.size(); j++) {
+                cont = cont || (myabs((old_multi[j]*old_rho-pr->multiplierRate[j]*pr->rho)/pr->multiplierRate[j]/pr->rho)>=1e-5);
+            }
+            /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+            }
+            cout<<endl;*/
+            i++;
+        } while (cont);
+        br = Br;
+        for (int j=1; j<=pr->nbBranches; j++) {
+            nodes[j]->B = B[j];
+            nodes[j]->V = V[j];
+        }
+        /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+        for (int g=1; g<=pr->ratePartition.size(); g++) {
+            if (!nan[g]) printf(" %.15f ",pr->rho*pr->multiplierRate[g]);
+        }
+        cout<<endl;*/
+    }
+    delete[] B;
+    delete[] V;
+    return consistent;
+}
+
+bool with_constraint_active_set_lambda_multirates(double br,Pr* pr,Node** nodes,bool reassign){
+    vector<int>::iterator iter=nodes[0]->suc.begin();
+    int r=(*iter);//r=r1
+    iter++;
+    int p_r=(*iter);//pr=r2
+    double* B = new double[pr->nbBranches+1];
+    double* V = new double[pr->nbBranches+1];
+    double Br = br;
+    for (int i=1; i<=pr->nbBranches; i++) {
+        B[i] = nodes[i]->B;
+        V[i] = nodes[i]->V;
+    }
+    if (pr->ratePartition.size()>0){
+        if (reassign) assignRateGroupToTree(pr,nodes);
+        for (int i=1; i<=pr->nbBranches; i++) {
+            if (i!=r && i!=p_r) {
+                double m = pr->multiplierRate[nodes[i]->rateGroup];
+                nodes[i]->B = B[i]/m;
+                nodes[i]->V = V[i]/m/m;
+            }
+        }
+        br = br/pr->multiplierRate[nodes[r]->rateGroup];
+    }
+    bool consistent = with_constraint_active_set_lambda(br,pr,nodes);
+    if (pr->ratePartition.size()>0) {
+        double* B = new double[pr->nbBranches+1];
+        double* V = new double[pr->nbBranches+1];
+        double Br = br;
+        for (int i=1; i<=pr->nbBranches; i++) {
+            B[i] = nodes[i]->B;
+            V[i] = nodes[i]->V;
+        }
+        bool* nan = new bool[pr->ratePartition.size()+1];
+        for (int i=1; i<=pr->ratePartition.size(); i++){
+            nan[i] = false;
+        }
+        /*printf("ROUND 0 , objective function %.15e , rate %.15f ",pr->objective,pr->rho);
+         for (int r=1; r<=pr->ratePartition.size(); r++) {
+         if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+         }
+         cout<<endl;*/
+        double old_phi = 0;
+        double old_rho = 0;
+        double* old_multi = new double[pr->ratePartition.size()+1];
+        old_multi[0]=1;
+        int i= 1;
+        bool cont = false;
+        do {
+            old_phi = pr->objective;
+            old_rho = pr->rho;
+            for (int r=1; r<=pr->ratePartition.size(); r++) {
+                old_multi[r] = pr->multiplierRate[r];
+            }
+            br = Br;
+            for (int r=1; r<=pr->nbBranches; r++) {
+                nodes[r]->B = B[r];
+                nodes[r]->V = V[r];
+            }
+            calculateMultiplier_lambda(r,p_r,br,pr,nodes,nan);
+            br = br/pr->multiplierRate[nodes[r]->rateGroup];
+            for (int j=1; j<=pr->nbBranches; j++) {
+                double m = pr->multiplierRate[nodes[j]->rateGroup];
+                nodes[j]->B = B[j]/m;
+                nodes[j]->V = V[j]/m/m;
+            }
+            consistent = with_constraint_active_set_lambda(br,pr,nodes);
+            cont = myabs((old_rho-pr->rho)/pr->rho) >= 1e-5;
+            for (int j=1; j<=pr->ratePartition.size(); j++) {
+                cont = cont || (myabs((old_multi[j]*old_rho-pr->multiplierRate[j]*pr->rho)/pr->multiplierRate[j]/pr->rho)>=1e-5);
+            }
+            /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+             for (int r=1; r<=pr->ratePartition.size(); r++) {
+             if (!nan[r]) printf(" %.15f ",pr->rho*pr->multiplierRate[r]);
+             }
+             cout<<endl;*/
+            i++;
+        } while (cont);
+        br = Br;
+        for (int j=1; j<=pr->nbBranches; j++) {
+            nodes[j]->B = B[j];
+            nodes[j]->V = V[j];
+        }
+        /*printf("ROUND %d , objective function %.15e , rate %.15f ",i,pr->objective,pr->rho);
+        for (int g=1; g<=pr->ratePartition.size(); g++) {
+            if (!nan[g]) printf(" %.15f ",pr->rho*pr->multiplierRate[g]);
+        }
+        cout<<endl;*/
+    }
+    delete[] B;
+    delete[] V;
+    return consistent;
 }

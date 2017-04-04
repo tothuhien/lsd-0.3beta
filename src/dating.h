@@ -38,3 +38,9 @@ list<double> with_constraint(Pr* pr,Node** &nodes,list<int> active_set);
 bool with_constraint_active_set(Pr* pr,Node** &nodes);
 
 void with_constraint_active_set_secondTime(Pr* pr,Node** &nodes);
+
+void calculateMultiplier(Pr* pr,Node** nodes);
+
+void without_constraint_multirates(Pr* pr,Node** nodes,bool reassign);
+
+bool with_constraint_multirates(Pr* pr,Node** nodes,bool reassign);

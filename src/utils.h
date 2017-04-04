@@ -16,10 +16,15 @@
 #endif
 #include "node.h"
 #include "pr.h"
+#include "pair.h"
+#include "subtree.h"
+#include "part.h"
 
 using namespace std;
   
 string readWord(FILE *f,string fn);
+
+string readWord(string line,int& pos);
 
 char readChar(FILE *f,string fn);
 
@@ -58,6 +63,8 @@ int mrca(Node**,int i,int j);
 int index(list<int> & L, int e);
 
 int index(string s,string* & L,int n);
+
+bool contain(int s,vector<int> l);
 
 bool contain(int s,list<int> l);
 
@@ -145,6 +152,10 @@ Node** unrooted2rootedS(Pr* pr,Node** nodes,int s);
 
 void computeObjective(Pr* pr,Node** nodes);
 
+void computeObjectiveMultiRates(Pr* pr,Node** nodes);
+
+void computeObjectiveMultiRates(Pr* pr,Node** nodes,double* B, double* V);
+
 void computeObjectiveEstimateRoot(int r,int p_r,double br,Pr* pr,Node** nodes);
 
 string newick(int i,int n,int* & P,int* & Suc1,int* & Suc2,string* & Labels,double* & B);
@@ -200,4 +211,17 @@ list<int> suc_polytomy(int i,int j,Pr* pr,Node** nodes,int* & Pre,list<int> &suc
 void computeVarianceEstimateRoot(Pr* pr,Node** nodes,double br);
 
 void computeNewVarianceEstimateRoot(Pr* pr,Node** nodes);
+
 void checkRooted(Pr* opt);
+
+int getInternalNodeId(Pr* pr,Node** nodes,string s);
+
+int firstCharacter(string s,int p);
+
+int lastCharacter(string s,int p);
+
+int assignRecursive(int r,Node** nodes,int g);
+
+int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g);
+
+void assignRateGroupToTree(Pr* pr,Node** nodes);
