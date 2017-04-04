@@ -23,13 +23,17 @@ How to Run LSD:
 ## Some examples of input files:
 
 
-### Example of Input_tree_file format (newick, can be either binary or polytomy, each tree per line):
+### Example of Input_tree_file format 
 
-((A:0.12,D:0.12):0.3,(B:0.3,C:0.5):0.4);
+Newick format, can be either binary or polytomy, each tree per line:
 
-((A:0.12,B:0.3):0.7,(C:0.5,D:0.8):0.1);
+    ((A:0.12,D:0.12):0.3,(B:0.3,C:0.5):0.4);
 
-### Example of Input_date_file format (it's not necessary to give the temporal constraints for all tips):
+    ((A:0.12,B:0.3):0.7,(C:0.5,D:0.8):0.1);
+
+### Example of Input_date_file format 
+
+It's not necessary to give the temporal constraints for all tips:
 
   5			# number of temporal constraints
   
@@ -59,7 +63,9 @@ For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)r
   
   root b(1998,1999)
 
-### Example of given_rate_file format (each rate per line, correspond to each tree in the Input_tree_file):
+### Example of given_rate_file format 
+
+Each rate per line, correspond to each tree in the Input_tree_file:
 
 	0.0068
 	
@@ -74,9 +80,11 @@ For example you have an input tree: ((A:0.12,D:0.12)n1:0.3,(B:0.3,C:0.5)n2:0.4)r
 	
 	outgroup2
 
-### Example of Partition_file: Suppose that we have a tree ((a:0.12,d:0.12)n1:0.3,((b:0.3,c:0.5)n2:0.4)n3:0.32,(e:0.5,(f:0.2,g:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
+### Example of Partition_file: 
 
-	group1 {mrca(a,d)} {mrca(e,f) mrca(f,g)}
+Suppose that we have a tree ((a:0.12,d:0.12)n1:0.3,((b:0.3,c:0.5)n2:0.4)n3:0.32,(e:0.5,(f:0.2,g:0,3)n4:0.33)n5:0.22)root; then we can define a Partition_file as follows:
+
+    group1 {mrca(a,d)} {mrca(e,f) mrca(f,g)}
     
     group2 {mrca(b,c)}
 
@@ -90,7 +98,9 @@ Note that if the internal nodes don't have labels, then they can be defined by m
 
 ./lsd -i rootedtree_file -d date_file -c -v 1
 
-### for rooted tree, constrained mode, using variances, using partition file (note that sequence length is required via option -s to calculate variances)
+### for rooted tree, constrained mode, using variances, using partition file 
+
+(note that sequence length is required via option -s to calculate variances)
 
 ./lsd -i rootedtree_file -d date_file -c -v 1 -s 500 -p parition_file
 
@@ -98,7 +108,9 @@ Note that if the internal nodes don't have labels, then they can be defined by m
 
 ./lsd -i rootedtree_file -d date_file -c -r l
 
-### similar to the previous example, but calculate confidence intervals from 100 simulated trees (note that sequence length must be specified by option -s for calculating confidence intervals)
+### similar to the previous example, but calculate confidence intervals from 100 simulated trees 
+
+(note that sequence length must be specified by option -s for calculating confidence intervals)
 
 ./lsd -i rootedtree_file -d date_file -c -r l -f 100 -s 1700
 
