@@ -1662,27 +1662,11 @@ int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g){
     Pair* root = subtree->root;
     int r = getInternalNodeId(pr,nodes,root->name);
     int s = 0;
-    vector<int> supRoot;
     for (int i=0; i<subtree->tips.size(); i++) {
         Pair* tip = subtree->tips[i];
         int t = getInternalNodeId(pr,nodes,tip->name);
-        if (tip->include) {
-            nodes[t]->rateGroup = g;
-            s++;
-        }
-        else{
-            nodes[t]->rateGroup = 0;
-            nodes[nodes[t]->P]->rateGroup = g;
-            s++;
-            vector<int> children = nodes[nodes[t]->P]->suc;
-            for (int j=0; j<children.size(); j++) {
-                if (children[j]!=t) {
-                    nodes[children[j]]->rateGroup=g;
-                    s++;
-                    supRoot.push_back(children[j]);
-                }
-            }
-        }
+        nodes[t]->rateGroup = g;
+        s++;
     }
     if (root->include) {
         s += assignRecursive(r,nodes,g);
@@ -1690,17 +1674,17 @@ int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g){
     else{
         vector<int> children = nodes[r]->suc;
         for (int k=0; k<children.size(); k++) {
-            s += assignRecursive(children[k],nodes,g);
+            if (nodes[children[k]]->rateGroup!=g) {
+                s += assignRecursive(children[k],nodes,g);
+            }
         }
-    }
-    for (int j=0;j<supRoot.size();j++){
-        s+=assignRecursive(supRoot[j],nodes,g);
     }
     return s;
 }
 
 void assignRateGroupToTree(Pr* pr,Node** nodes){
     vector<int> subroot;
+    
     for (int i=0; i<pr->ratePartition.size(); i++) {
         Part* group = pr->ratePartition[i];
         for (int j=0; j<group->subtrees.size(); j++) {
@@ -1743,8 +1727,10 @@ void assignRateGroupToTree(Pr* pr,Node** nodes){
             else{
                 vector<int> children = nodes[r]->suc;
                 for (int k=0; k<children.size(); k++) {
-                    nodes[children[k]]->rateGroup = i+1;
-                    nbBranchesPartition ++;
+                    if (nodes[children[k]]->rateGroup != (i+1)) {
+                        nodes[children[k]]->rateGroup = i+1;
+                        nbBranchesPartition ++;
+                    }
                 }
             }
         }
