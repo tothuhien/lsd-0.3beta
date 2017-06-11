@@ -74,7 +74,9 @@ typedef struct Pr
         nbSampling=pr->nbSampling;
         ratePartition = pr->ratePartition;
         multiplierRate = new double[pr->ratePartition.size()+1];
-        multiplierRate[0] = pr->multiplierRate[0];
+        if (pr->ratePartition.size() > 0) {
+            multiplierRate[0] = pr->multiplierRate[0];
+        }
     }
     Pr()
     {
