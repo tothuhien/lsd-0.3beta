@@ -61,16 +61,16 @@ int tree2data(FILE * tree,Pr* pr,Node** nodes,bool& constraintConsistent){
             c=readChar(tree,"input tree");
         }
     }  while (a>0);
-    nodes[0]->P=-1;
-    nodes[0]->B=-1;
-    while (c!='\n') {
-        c=readChar(tree,"input tree");
-    }
     if (nbChild==2) {
         pr->rooted=true;
+        nodes[0]->P=-1;
+        nodes[0]->B=-1;
     }
     else{
         pr->rooted=false;
+        nodes[1]->P=-1;
+        nodes[1]->B=-1;
+        nodes[0] = new Node();
     }
     int lineNb=getLineNumber(pr->inDateFile);
     FILE * dateFile = fopen(pr->inDateFile.c_str(),"rt");
