@@ -480,7 +480,7 @@ void computeVariance(Pr* pr,Node** nodes){
 void computeVarianceEstimateRoot(Pr* pr,Node** nodes,double br){
     if (pr->variance==1 || pr->variance==2){
         for (int i=1;i<=pr->nbBranches;i++){
-            if (nodes[i]->P==0) {
+            if (nodes[i]->P!=0) {
                 nodes[i]->V=(nodes[i]->B+(double)(pr->c)/pr->seqLength)/pr->seqLength;
             }
             else nodes[i]->V=variance(pr,br);
