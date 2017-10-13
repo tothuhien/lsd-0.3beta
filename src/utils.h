@@ -226,20 +226,6 @@ int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g);
 
 void assignRateGroupToTree(Pr* pr,Node** nodes);
 
-void calculateOulier(double* sortedArray,double& mi,double& ma,int size,double k);
 
 double* sortTab(double* tab,int size);
 
-double* residus(Pr* pr,Node** nodes);
-
-void outlier(Pr* pr,Node** nodes,double k);
-
-bool outlierRTT(Pr* pr,Node** nodes,double k);
-
-double* calculateRtt(Pr* pr,Node** nodes);
-
-vector<double> linearRegression(Pr* pr,Node** nodes,double* &residus);
-
-bool outlierCheck(Pr* pr,Node** nodes);
-
-double median(double* x,int size);

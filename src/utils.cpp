@@ -911,25 +911,6 @@ bool initConstraint(Pr* pr,Node** nodes){//internalConstraints of the old tree, 
     return constraintConsistent;
 }
 
-bool outlierCheck(Pr* pr,Node** nodes){
-    bool* out = new bool[pr->nbBranches+1];
-    for (int i=0;i<=pr->nbBranches;i++) out[i]=false;
-    for (int i=0;i<pr->outlier.size();i++) out[pr->outlier[i]] = true;
-    list<int> pos = postorder_polytomy(pr,nodes);
-    for (list<int>::iterator iter=pos.begin();iter!=pos.end();iter++){
-        int i = *iter;
-        bool bl = true;
-        for (vector<int>::iterator it = nodes[i]->suc.begin();it!=nodes[i]->suc.end();it++){
-            bl = bl && out[*it];
-        }
-        out[i] = bl;
-    }
-    for (vector<int>::iterator it = nodes[0]->suc.begin();it!=nodes[0]->suc.end();it++){
-        if (out[*it]==true) return false;
-    }
-    return true;
-}
-
 Node** cloneLeaves(Pr* pr,Node** nodes,int f){
     Node** nodes_new =  new Node*[pr->nbBranches+1+f];
     for (int i=0; i<pr->nbINodes; i++) {
@@ -992,11 +973,7 @@ bool reroot_rootedtree(double& br,int r,int s10,int s20,Pr* pr,Node** nodes,Node
         nodes_new[s10]->B=br;
         nodes_new[s20]->B=br;
         computeVarianceEstimateRoot(pr,nodes_new,br);
-        bool out = true;
-        if (pr->outlier.size()>0) {
-            out = outlierCheck(pr,nodes_new);
-        }
-        return initConstraint(pr,nodes_new) && out;
+        return initConstraint(pr,nodes_new);
     }
     else {
         nodes_new[0]->L="";
@@ -1038,11 +1015,7 @@ bool reroot_rootedtree(double& br,int r,int s10,int s20,Pr* pr,Node** nodes,Node
         nodes_new[r]->B=br;
         nodes_new[nodes[r]->P]->B=br;
         computeVarianceEstimateRoot(pr,nodes_new,br);
-        bool out = true;
-        if (pr->outlier.size()>0) {
-            out = outlierCheck(pr,nodes_new);
-        }
-        return initConstraintReRooted(pr, nodes_new,k,i) && out;
+        return initConstraintReRooted(pr, nodes_new,k,i);
     }
 }
 
@@ -1389,9 +1362,6 @@ void initialize_status(Pr* &pr,Node** &nodes){
     for (int i=0; i<=pr->nbBranches; i++) {
         if (nodes[i]->type=='p') nodes[i]->status=8;
         else nodes[i]->status=0;
-    }    
-    for (int i=0;i<pr->outlier.size();i++){
-        nodes[pr->outlier[i]]->status=0;        
     }
 }
 
@@ -1794,168 +1764,4 @@ void assignRateGroupToTree(Pr* pr,Node** nodes){
     if (nbBranchesPartition==pr->nbBranches) {
         pr->multiplierRate[0]=-1;//Full partition
     }
-}
-/*int* order(double* & tab,int size){
-	int* order = new int[size];
-	for (int i=0;i<size;i++) order[i]=i;
-    for (int i=0;i<size;i++){
-        for (int j=i;j<size;j++){
-            if (tab[order[i]]>tab[order[j]]){
-                double temp = order[i];
-                order[i]=order[j];
-                order[j]=temp;
-            }
-        }
-    }
-    return order;
-}*/
-void calculateOulier(double* sortedArray,double& mi,double& ma,int size,double k){
-    int q1 = round(size/4);
-    int q3 = round(3*size/4);
-    double iqr = sortedArray[q3-1]-sortedArray[q1-1];
-    mi = sortedArray[q1-1]-k*iqr;
-    ma = sortedArray[q3-1]+k*iqr;
-}
-
-
-/*void outlierRTT(Pr* pr,Node** nodes){
- 
-    for (int i=1;i <= pr->nbBranches;i++){
-        residus[i-1]=(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D));
-        //cout<<residus[i-1]<<" ";
-        residus[i-1]=residus[i-1]/sqrt(nodes[i]->V);
-        
-    }
-    double mi=0;
-    double ma=0;
-    double* sortedTab = sortTab(residus,pr->nbBranches);
-    calculateOulier(sortedTab,mi,ma,pr->nbBranches);
-    pr->outlier.clear();
-    cout<<",";
-    for (int i=1;i<=pr->nbBranches;i++){
-        if (residus[i-1]<mi || residus[i-1]>ma){
-            if (i>=pr->nbINodes){
-                pr->outlier.push_back(i);
-                cout<<i<<",";
-            }
-        }
-    }
-    cout<<endl;
-    int* ord = order(residus,pr->nbBranches+1);
-    cout<<endl;
-    for (int i=0;i<pr->nbBranches;i++){
-        cout<<residus[i]<<" ";
-    }
-    cout<<endl;
-    
-    cout<<endl;
-    pr->outlier.clear();
-    for (int i=pr->nbINodes;i<=pr->nbBranches;i++){
-        if (nodes[i]->L=="'EBOV|DML13828||SLE|WesternUrban|2015-06-22'") pr->outlier.push_back(i);
-    }
-    cout<<pr->outlier.size()<<endl;
-}*/
-
-double* residus(Pr* pr,Node** nodes){
-    double* res = new double[pr->nbBranches];
-    for (int i=1;i <= pr->nbBranches;i++){
-        res[i-1]=(nodes[i]->B-pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D));
-        res[i-1]=res[i-1]/sqrt(nodes[i]->V);
-    }
-    return res;
-}
-
-void outlier(Pr* pr,Node** nodes,double k){
-    double* res = residus(pr,nodes);
-    double mi=0;
-    double ma=0;
-    double* resTip = new double [pr->nbBranches - pr->nbINodes + 1];
-    for (int i=0;i<pr->nbBranches - pr->nbINodes + 1;i++) resTip[i] = res[i + pr->nbINodes-1];
-    double* sortedTab = sortTab(resTip,pr->nbBranches - pr->nbINodes + 1);
-    calculateOulier(sortedTab,mi,ma,pr->nbBranches - pr->nbINodes + 1,k);
-    pr->outlier.clear();
-    for (int i=0;i<pr->nbBranches - pr->nbINodes + 1;i++){
-        if (resTip[i]<mi || resTip[i]>ma){
-            pr->outlier.push_back(i+pr->nbINodes);
-        }
-    }
-    cout<<"outlier "<<pr->outlier.size()<<endl;
-}
-
-double* calculateRtt(Pr* pr,Node** nodes){
-    double* rtt = new double[pr->nbBranches - pr->nbINodes + 1];
-    for (int i=pr->nbINodes;i<=pr->nbBranches;i++){
-        rtt[i-pr->nbINodes] = 0;
-        int j = i;
-        while (j!=0){
-            rtt[i-pr->nbINodes] = rtt[i-pr->nbINodes] + nodes[j]->B;
-            j = nodes[j]->P;
-        }
-    }
-    return rtt;
-}
-
-vector<double> linearRegression(Pr* pr,Node** nodes,double* &residus){
-    double xSum = 0, ySum = 0, xxSum = 0, xySum = 0;
-    double slope,intercept;
-    double* rtt = calculateRtt(pr,nodes);
-    for (int i = pr->nbINodes; i <= pr->nbBranches; i++)
-    {
-        xSum += nodes[i]->D;
-        ySum += rtt[i - pr->nbINodes];
-        xxSum += nodes[i]->D * nodes[i]->D;
-        xySum += nodes[i]->D * rtt[i - pr->nbINodes];
-    }
-    int size = pr->nbBranches - pr->nbINodes + 1;
-    slope = (size * xySum - xSum * ySum) / (size * xxSum - xSum * xSum);
-    intercept = (ySum - slope * xSum) / size;
-    for (int i=0; i<size;i++){
-        residus[i] = rtt[i] - (slope*nodes[i+pr->nbINodes]->D+intercept);
-    }
-    vector<double> res;
-    res.push_back(slope);
-    res.push_back(intercept);
-    return res;
-}
-
-bool outlierRTT(Pr* pr,Node** nodes,double k){
-    double* residus = new double[pr->nbBranches - pr->nbINodes + 1];
-    vector<double> result = linearRegression(pr,nodes,residus);
-    double mi=0;
-    double ma=0;
-    double* sortedTab = sortTab(residus,pr->nbBranches - pr->nbINodes + 1);
-    calculateOulier(sortedTab,mi,ma,pr->nbBranches - pr->nbINodes + 1,k);
-    pr->outlier.clear();
-    bool* outlier = new bool[pr->nbBranches+1];
-    for (int i=0;i<=pr->nbBranches;i++){
-        outlier[i] = false;
-    }
-    for (int i=pr->nbINodes;i<=pr->nbBranches;i++){
-        if (residus[i-pr->nbINodes]<mi || residus[i-pr->nbINodes]>ma){
-            pr->outlier.push_back(i); //cout<<i<<"*"<<nodes[i]->P<<" ";
-            outlier[i] = true;
-            //if (nodes[i]->P==0) exit(EXIT_FAILURE);
-        }
-    }
-    //cout<<pr->outlier.size()<<endl;
-    
-    //check if any subclade contains all nodes as outlier
-    list<int> pos = postorder_polytomy(pr,nodes);
-    for (list<int>::iterator iter=pos.begin();iter!=pos.end();iter++){
-        int i =  *iter;
-        bool out = true;
-        for (vector<int>::iterator iter = nodes[i]->suc.begin();iter!=nodes[i]->suc.end();iter++){
-            out = out && (outlier[*iter]);
-        }
-        outlier[i] = out;
-    }
-    for (vector<int>::iterator iter = nodes[0]->suc.begin();iter!= nodes[0]->suc.end();iter++){
-        if (outlier[*iter]==true) return false;
-    }
-    return true;
-}
-
-double median(double* x,int size){
-    double* r = sortTab(x,size);
-    return r[size/2];
 }
