@@ -439,27 +439,26 @@ Node** unrooted2rooted(Pr* pr,Node** nodes,int s){
 }
 
 Node** unrooted2rootedS(Pr* pr,Node** nodes,int s){//simplier version, use only for remove outgroup
-    Node** nodes_new = new Node*[pr->nbBranches+2];
+    Node** nodes_new = new Node*[pr->nbBranches+1];
     for (int i=pr->nbINodes; i<=pr->nbBranches; i++) {
-        nodes_new[i+1]=new Node();
-        nodes_new[i+1]->P=nodes[i]->P+1;
-        nodes_new[i+1]->B=nodes[i]->B;
-        nodes_new[i+1]->L=nodes[i]->L;
+        nodes_new[i]=new Node();
+        nodes_new[i]->P=nodes[i]->P;
+        nodes_new[i]->B=nodes[i]->B;
+        nodes_new[i]->L=nodes[i]->L;
     }
     for (int i=0; i<pr->nbINodes; i++) {
-        nodes_new[i+1] = new Node();
-        nodes_new[i+1]->P=nodes[i]->P+1;
-        nodes_new[i+1]->B=nodes[i]->B;
+        nodes_new[i] = new Node();
+        nodes_new[i]->P=nodes[i]->P;
+        nodes_new[i]->B=nodes[i]->B;
     }
     nodes_new[0]=new Node();
     nodes_new[0]->P=-1;
     double br=nodes[s]->B;
-    nodes_new[s+1]->B=br/2;
+    nodes_new[s]->B=br/2;
     nodes_new[1]->B=br/2;
-    nodes_new[s+1]->P=0;
+    nodes_new[s]->P=0;
     nodes_new[1]->P=0;
-    pr->nbINodes+=1;
-    pr->nbBranches+=1;
+    shiftInternalConstraints(pr);
     computeSuc_polytomy(pr,nodes_new);
     return nodes_new;
 }
