@@ -396,7 +396,7 @@ void printHelp( void )
            FLAT"\t   This option calculates the confidence intervals of the estimated rate and dates. The branch lengths of the esimated\n"
            FLAT"\t   tree are sampled " FLAT LINE"samplingNumber" FLAT " times to generate a set of trees. We use Poisson distribution to generate \n"
 	   FLAT"\t   branch lengths, hence the sequence length should be precised in the option -s. Dating is then processed on each tree. The \n"
-	   FLAT"\t   confidence intervals are inferred from these simulated trees and are written in the nexus tree output with the name \"CI\".\n"
+	   FLAT"\t   95 % confidence intervals are inferred from these simulated trees and are written in the nexus tree output with the name \"CI\".\n"
            FLAT"\t" BOLD"-g " LINE"outgroupFile\n"
            FLAT"\t   If your data contain outgroups, specify the name of the outgroup file here.\n"
            FLAT"\t   The program will remove the outgroups from the trees and take the ingroup trees as the input. If you want to keep the outgroups,\n"
