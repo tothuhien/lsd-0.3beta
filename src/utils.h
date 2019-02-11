@@ -166,7 +166,11 @@ string newickDate(int i,Pr* pr,Node** nodes);
 
 string nexus(int i,Pr* pr,Node** nodes);
 
-string nexusIC(int i,Pr* pr,Node** nodes,double* T_min,double* T_max);
+string nexusDate(int i,Pr* pr,Node** nodes);
+
+string nexusIC(int i,Pr* pr,Node** nodes,double* D_min,double* D_max,double* H_min,double* H_max);
+
+string nexusICDate(int i,Pr* pr,Node** nodes,double* D_min,double* D_max,double* H_min,double* H_max);
 
 double* variance(int w,int m,double* B,int c,int s);
 
@@ -226,6 +230,6 @@ int assignRateGroupToSubTree(Subtree* subtree,Pr* pr,Node** nodes,int g);
 
 void assignRateGroupToTree(Pr* pr,Node** nodes);
 
-
 double* sortTab(double* tab,int size);
 
+void calculate_tree_height(Pr* pr,Node** & nodes);

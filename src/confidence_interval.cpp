@@ -103,7 +103,7 @@ void collapseTreeReOrder(Pr* pr,Node** nodes,Pr* prReduced,Node** nodesReduced,i
     }
 }
 
-void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,double &rho_left,double& rho_right,double* &other_rhos_left,double* &other_rhos_right){
+void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,double* &H_left,double* &H_right,double* &HD_left,double* &HD_right,double &rho_left,double& rho_right,double* &other_rhos_left,double* &other_rhos_right){
     Node** nodes_new = new Node*[pr->nbBranches+1];
     int* tab = new int[pr->nbBranches+1];
     int nbC = collapseTree(pr, nodes, nodes_new,tab);//nbC is the number of internal nodes reduced
@@ -135,7 +135,15 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
             B_simul[j][i]=(double)distribution(generator)/(pr->seqLength);
         }
     }
+    double maxD = nodesReduced[prReduced->nbINodes]->D; // the most recent tip date
+    for (int i = prReduced->nbINodes+1; i <= prReduced->nbBranches; i++){
+        if (nodesReduced[i]->D > maxD){
+            maxD = nodesReduced[i]->D;
+        }
+    }
     double** T_simul = new double*[pr->nbSampling];
+    double** H_simul = new double*[pr->nbSampling];
+    double** HD_simul = new double*[pr->nbSampling];
     double* rho_simul = new double[pr->nbSampling];
     vector<double>* other_rhos_simul = new vector<double>[pr->nbSampling];
     std::poisson_distribution<int> distribution(br*pr->seqLength);
@@ -157,30 +165,49 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
         for (int g=1; g<=pr->ratePartition.size(); g++) {
             other_rhos_simul[r].push_back(prReduced->rho*prReduced->multiplierRate[g]);
         }
+        calculate_tree_height(prReduced,nodesReduced);
+        H_simul[r]=new double[prReduced->nbBranches+1];
+        HD_simul[r]=new double[prReduced->nbBranches+1];
+        for (int j=0;j<=prReduced->nbBranches;j++){
+            H_simul[r][j]=nodesReduced[j]->H;
+            HD_simul[r][j]=nodesReduced[j]->HD;
+        }
         delete[] B_simul[r];
     }
     delete[] B_simul;
-    delete prReduced;
-    for (int i=0;i<nbC+pr->nbBranches-pr->nbINodes+1;i++){
-        delete nodesReduced[i];
-    }
-    delete[] nodesReduced;
     sort(rho_simul,pr->nbSampling);
     rho_left=rho_simul[int(0.025*pr->nbSampling)];
     rho_right=rho_simul[pr->nbSampling-int(0.025*pr->nbSampling)-1];
     if (pr->rho<rho_left) rho_left=pr->rho;
     if (pr->rho>rho_right) rho_right=pr->rho;
     double* T_sort = new double[pr->nbSampling];
+    double* H_sort = new double[pr->nbSampling];
+    double* HD_sort = new double[pr->nbSampling];
     for (int i=0;i<=pr->nbBranches;i++){
         if (tab[i]!=-1) {
             for (int j=0;j<pr->nbSampling;j++) {
                 T_sort[j]=T_simul[j][tab[i]];
+                H_sort[j]=H_simul[j][tab[i]];
+                HD_sort[j]=HD_simul[j][tab[i]];
             }
             sort(T_sort,pr->nbSampling);
+            sort(H_sort,pr->nbSampling);
+            sort(HD_sort,pr->nbSampling);
+            
             T_left[i]=T_sort[int(0.025*pr->nbSampling)];
             if (T_left[i]>nodes[i]->D) T_left[i]=nodes[i]->D;
             T_right[i]=T_sort[pr->nbSampling-int(0.025*pr->nbSampling)-1];
             if (T_right[i]<nodes[i]->D) T_right[i]=nodes[i]->D;
+            
+            H_left[i]=H_sort[int(0.025*pr->nbSampling)];
+            if (H_left[i]>nodes[i]->H) H_left[i]=nodes[i]->H;
+            H_right[i]=H_sort[pr->nbSampling-int(0.025*pr->nbSampling)-1];
+            if (H_right[i]<nodes[i]->H) H_right[i]=nodes[i]->H;
+            
+            HD_left[i]=HD_sort[int(0.025*pr->nbSampling)];
+            if (HD_left[i]>nodes[i]->HD) HD_left[i]=nodes[i]->HD;
+            HD_right[i]=HD_sort[pr->nbSampling-int(0.025*pr->nbSampling)-1];
+            if (HD_right[i]<nodes[i]->HD) HD_right[i]=nodes[i]->HD;
         }
     }
     double* other_rhos_simul_sort = new double[pr->nbSampling];
@@ -194,19 +221,29 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
         other_rhos_right[g]=other_rhos_simul_sort[pr->nbSampling-int(0.025*pr->nbSampling)-1];
         if (other_rhos_right[g]<pr->rho*pr->multiplierRate[g]) other_rhos_right[g]=pr->rho*pr->multiplierRate[g];
     }
-    
+    for (int i=0;i<=prReduced->nbBranches;i++){
+        delete nodesReduced[i];
+    }
+    delete[] nodesReduced;
+    delete prReduced;
     delete[] tab;
     delete[] rho_simul;
     delete[] T_sort;
+    delete[] H_sort;
+    delete[] HD_sort;
     delete[] other_rhos_simul_sort;
     delete[] other_rhos_simul;
     for (int i=0;i<pr->nbSampling;i++){
         delete[] T_simul[i];
+        delete[] H_simul[i];
+        delete[] HD_simul[i];
     }
     delete[] T_simul;
+    delete[] H_simul;
+    delete[] HD_simul;
 }
 
-void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2,FILE* tree3){
+void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2){
     if (pr->relative) {
         fprintf(f,"The results correspond to the estimation of relative dates when T[mrca]=%0.6f and T[tips]=%0.6f\n",pr->mrca,pr->leaves);
         printf("The results correspond to the estimation of relative dates when T[mrca]=%0.6f and T[tips]=%0.6f\n",pr->mrca,pr->leaves);
@@ -243,27 +280,14 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
         }
         printf("tMRCA %.6f , objective function %.6e\n",nodes[0]->D,pr->objective);
     }
-    if (pr->ratePartition.size()==0){
-        for (int i=1;i<=pr->nbBranches;i++){
-            nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
-        }
-    }
-    else {
-        for (int i=1;i<=pr->nbBranches;i++){
-                int g = nodes[i]->rateGroup;
-                if (g==0) {
-                    nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
-                }
-                else{
-                    nodes[i]->B=pr->rho*pr->multiplierRate[g]*(nodes[i]->D-nodes[nodes[i]->P]->D);
-                }
-        }
-    }
+    calculate_tree_height(pr,nodes);
     if (!pr->ci){
         fprintf(tree1,"tree %d = ",y);
         fprintf(tree1,"%s",nexus(0,pr,nodes).c_str());
-        fprintf(tree2,"%s",newick(0,0,pr,nodes).c_str());
-        fprintf(tree3,"%s",newickDate(0,pr,nodes).c_str());
+        fprintf(tree2,"tree %d = ",y);
+        fprintf(tree2,"%s",nexusDate(0,pr,nodes).c_str());
+        //fprintf(tree2,"%s",newick(0,0,pr,nodes).c_str());
+        //fprintf(tree3,"%s",newickDate(0,pr,nodes).c_str());
         if (!pr->constraint){
             int count=0;
             for (int i=1;i<=pr->nbBranches;i++){
@@ -286,11 +310,15 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
         }
         double* T_min = new double[pr->nbBranches+1];
         double* T_max = new double[pr->nbBranches+1];
+        double* H_min = new double[pr->nbBranches+1];
+        double* H_max = new double[pr->nbBranches+1];
+        double* HD_min = new double[pr->nbBranches+1];
+        double* HD_max = new double[pr->nbBranches+1];
         double rho_left,rho_right;
         double* other_rhos_left = new double[pr->ratePartition.size()+1];
         double* other_rhos_right = new double[pr->ratePartition.size()+1];
         cout<<"Computing confidence intervals ..."<<endl;
-        computeIC(br,pr,nodes,T_min,T_max,rho_left,rho_right,other_rhos_left,other_rhos_right);
+        computeIC(br,pr,nodes,T_min,T_max,H_min,H_max,HD_min,HD_max,rho_left,rho_right,other_rhos_left,other_rhos_right);
         
         if (pr->ratePartition.size()==0 || pr->multiplierRate[0]!=-1) fprintf(f,"rate %.3e [%.3e , %.3e] , ",pr->rho,rho_left,rho_right);
         for (int i=1; i<=pr->ratePartition.size(); i++) {
@@ -304,9 +332,11 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
         printf("tMRCA %.6f [%.6f , %.6f] , objective function %.6e\n",nodes[0]->D,T_min[0],T_max[0],pr->objective);
         
         fprintf(tree1,"tree %d = ",y);
-        fprintf(tree1,"%s",nexusIC(0,pr,nodes,T_min,T_max).c_str());
-        fprintf(tree2,"%s",newick(0,0,pr,nodes).c_str());
-        fprintf(tree3,"%s",newickDate(0,pr,nodes).c_str());
+        fprintf(tree2,"tree %d = ",y);
+        fprintf(tree1,"%s",nexusIC(0,pr,nodes,T_min,T_max,H_min,H_max).c_str());
+        fprintf(tree2,"%s",nexusICDate(0,pr,nodes,T_min,T_max,HD_min,HD_max).c_str());
+        //fprintf(tree2,"%s",newick(0,0,pr,nodes).c_str());
+        //fprintf(tree3,"%s",newickDate(0,pr,nodes).c_str());
         if (!pr->constraint){
             int count=0;
             for (int i=1;i<=pr->nbBranches;i++){
@@ -323,6 +353,8 @@ void output(double br,int y, Pr* pr,Node** nodes,FILE* f,FILE* tree1,FILE* tree2
         printf("\n");
         delete[] T_min;
         delete[] T_max;
+        delete[] H_min;
+        delete[] H_max;
     }
     if (pr->rho==pr->rho_min) {
         fprintf(f, "The estimated rate reaches the given lower bound. To change the lower bound, use option -t\n");

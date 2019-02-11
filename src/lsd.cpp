@@ -56,16 +56,17 @@ int main( int argc, char** argv ){
         exit(EXIT_FAILURE);
     }
     opt->treeFile1=opt->outFile+".nexus";
-    opt->treeFile2=opt->outFile+".newick";
-    opt->treeFile3=opt->outFile+".date.newick";
+    opt->treeFile2=opt->outFile+".date.nexus";
+    //opt->treeFile3=opt->outFile+".date.newick";
     FILE * tree1 = fopen(opt->treeFile1.c_str(),"wt");
     FILE * tree2 = fopen(opt->treeFile2.c_str(),"wt");
-    FILE * tree3 = fopen(opt->treeFile3.c_str(),"wt");
+    //FILE * tree3 = fopen(opt->treeFile3.c_str(),"wt");
     FILE * gr=NULL;//given rate
-    if (tree1==NULL || tree2==NULL || tree3==NULL){
-        cout<<"Error: can not create the output tree file "<<opt->treeFile1<<endl;
+    if (tree1==NULL || tree2==NULL){
+        cout<<"Error: can not create the output tree file "<<endl;
     }
     fprintf(tree1,"#NEXUS\n");
+    fprintf(tree2,"#NEXUS\n");
     Node** nodes = new Node*[opt->nbBranches+1];
     if (opt->givenRate) {
         gr = fopen(opt->rate.c_str(),"rt");
@@ -96,6 +97,7 @@ int main( int argc, char** argv ){
         }
         if (y==1){
             fprintf(tree1,"Begin trees;\n");
+            fprintf(tree2,"Begin trees;\n");
         }
         computeVariance(opt,nodes);
         constraintConsistent=initConstraint(opt, nodes);
@@ -106,7 +108,7 @@ int main( int argc, char** argv ){
                 if (constraintConsistent){
                     cout<<"Dating without temporal constraints ..."<<endl;
                     without_constraint_multirates(opt,nodes,true);
-                    output(br,y,opt,nodes,result,tree1,tree2,tree3);
+                    output(br,y,opt,nodes,result,tree1,tree2);
                 }
                 else{
                     cout<<"There's conflict in the input temporal constraints. Try the option -r to re-estimate the root position."<<endl;
@@ -124,7 +126,7 @@ int main( int argc, char** argv ){
                 nodes[s2]->V=nodes[s1]->V;
                 without_constraint_active_set_lambda_multirates(br,opt,nodes,true);
                 //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
-                output(br,y,opt,nodes,result,tree1,tree2,tree3);
+                output(br,y,opt,nodes,result,tree1,tree2);
             }
             else{//estimate the root
                 int r;
@@ -148,7 +150,7 @@ int main( int argc, char** argv ){
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
                     without_constraint_active_set_lambda_multirates(br,opt,nodes_new,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
-                    output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
+                    output(br,y,opt,nodes_new,result,tree1,tree2);
                     for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];
                     delete[] nodes_new;
                 }
@@ -161,7 +163,7 @@ int main( int argc, char** argv ){
                     cout<<"Dating under temporal constraints mode ..."<<endl;
                     bool consistent = with_constraint_multirates(opt,nodes,true);
                     if (consistent) {
-                        output(br,y,opt,nodes,result,tree1,tree2,tree3);
+                        output(br,y,opt,nodes,result,tree1,tree2);
                     }
                     else{
                         cout<<"There's conflict in the input temporal constraints. Try the option -r to re-estimate the root position."<<endl;
@@ -183,7 +185,7 @@ int main( int argc, char** argv ){
                     nodes[s2]->V=nodes[s1]->V;
                     with_constraint_active_set_lambda_multirates(br,opt,nodes,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
-                    output(br,y,opt,nodes,result,tree1,tree2,tree3);
+                    output(br,y,opt,nodes,result,tree1,tree2);
             }
             else{//estimate the root
                 int r;
@@ -211,7 +213,7 @@ int main( int argc, char** argv ){
                     reroot_rootedtree(br,r,s1,s2,opt,nodes,nodes_new);
                     with_constraint_active_set_lambda_multirates(br,opt,nodes_new,true);
                     //br=(nodes[s1]->D+nodes[s2]->D-2*nodes[0]->D)*opt->rho;
-                    output(br,y,opt,nodes_new,result,tree1,tree2,tree3);
+                    output(br,y,opt,nodes_new,result,tree1,tree2);
                     for (int i=0;i<opt->nbBranches+1;i++) delete nodes_new[i];
                     delete[] nodes_new;
                 }
@@ -225,12 +227,12 @@ int main( int argc, char** argv ){
     fprintf(result, "\n*********************************************************\n" );
     fprintf(result, "Elapsed time: %.2f seconds\n", elapsed_time);
     fprintf(tree1,"End;");
+    fprintf(tree2,"End;");
     cout<<"Elapsed time: "<<elapsed_time<<" seconds"<<endl;;
     fclose(tree);
     fclose(result);
     fclose(tree1);
     fclose(tree2);
-    fclose(tree3);
     if (opt->rate!="") fclose(gr);
     return EXIT_SUCCESS;
 }

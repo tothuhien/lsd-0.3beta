@@ -20,6 +20,8 @@ public:
     double B;
     string L;
     double V;
+    double H; //height
+    double HD; //height in term of date
     vector<int> suc;
     char type;
     double lower;

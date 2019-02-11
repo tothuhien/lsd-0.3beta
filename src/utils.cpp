@@ -1281,8 +1281,33 @@ string nexus(int i,Pr* pr,Node** nodes){
     }
 }
 
+string nexusDate(int i,Pr* pr,Node** nodes){
+    ostringstream b,date;
+    if (i>0){
+        b<< (nodes[i]->D - nodes[nodes[i]->P]->D);
+    }
+    date<<nodes[i]->D;
+    if (i>=pr->nbINodes) return nodes[i]->L+"[&date="+date.str()+"]:"+b.str();
+    else{
+        string newLabel="(";
+        for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
+            int s = *iter;
+            string l=nexusDate(s,pr,nodes);
+            if (iter==nodes[i]->suc.begin()) newLabel+=l;
+            else newLabel+=","+l;
+        }
+        if (i>0) {
+            if (myabs(nodes[i]->B)>toCollapse) return newLabel+")"+nodes[i]->L+"[&date="+date.str()+"]:"+b.str();
+            else return newLabel+")"+nodes[i]->L+":"+b.str();
+        }
+        else{
+            return newLabel+")"+nodes[i]->L+"[&date="+date.str()+"];\n";
+        }
+    }
+}
 
-string nexusIC(int i,Pr* pr,Node** nodes,double* T_min,double* T_max){
+
+string nexusIC(int i,Pr* pr,Node** nodes,double* D_min,double* D_max,double* H_min,double* H_max){
     ostringstream b,date;
     if (i>0){
         b<<nodes[i]->B;
@@ -1290,26 +1315,64 @@ string nexusIC(int i,Pr* pr,Node** nodes,double* T_min,double* T_max){
     date<<nodes[i]->D;
     if (i>=pr->nbINodes && nodes[i]->type=='p') return nodes[i]->L+"[&date="+date.str()+"]:"+b.str();
     else{
-        ostringstream tmin,tmax;
-        tmin<< T_min[i];
-        tmax<< T_max[i];
+        ostringstream hmin,hmax,dmin,dmax;
+        hmin<< H_min[i];
+        hmax<< H_max[i];
+        dmin<< D_min[i];
+        dmax<< D_max[i];
         if (i>=pr->nbINodes) {
-            return nodes[i]->L+"[&date="+date.str()+"][&CI=\""+date.str()+"("+tmin.str()+","+tmax.str()+")\"]:"+b.str();
+            return nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"]:"+b.str();
         }
         else{
             string newLabel="(";
             for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
                 int s = *iter;
-                string l=nexusIC(s,pr,nodes,T_min,T_max);
+                string l=nexusIC(s,pr,nodes,D_min,D_max,H_min,H_max);
                 if (iter==nodes[i]->suc.begin()) newLabel+=l;
                 else newLabel+=","+l;
             }
             if (i>0) {
-                if (myabs(nodes[i]->B)>toCollapse) return newLabel+")"+nodes[i]->L+"[&date="+date.str()+"][&CI=\""+date.str()+"("+tmin.str()+","+tmax.str()+")\"]:"+b.str();
+                if (myabs(nodes[i]->B)>toCollapse) return newLabel+")"+nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"]:"+b.str();
                 else return newLabel+")"+nodes[i]->L+":"+b.str();
             }
             else{
-                return newLabel+")"+nodes[i]->L+"[&date="+date.str()+"][&CI=\""+date.str()+"("+tmin.str()+","+tmax.str()+")\"];\n";
+                return newLabel+")"+nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"];\n";
+            }
+            
+        }
+    }
+}
+
+string nexusICDate(int i,Pr* pr,Node** nodes,double* D_min,double* D_max,double* H_min,double* H_max){
+    ostringstream b,date;
+    if (i>0){
+        b<< (nodes[i]->D - nodes[nodes[i]->P]->D) ;
+    }
+    date<<nodes[i]->D;
+    if (i>=pr->nbINodes && nodes[i]->type=='p') return nodes[i]->L+"[&date="+date.str()+"]:"+b.str();
+    else{
+        ostringstream hmin,hmax,dmin,dmax;
+        hmin<< H_min[i];
+        hmax<< H_max[i];
+        dmin<< D_min[i];
+        dmax<< D_max[i];
+        if (i>=pr->nbINodes) {
+            return nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"]:"+b.str();
+        }
+        else{
+            string newLabel="(";
+            for (vector<int>::iterator iter=nodes[i]->suc.begin(); iter!=nodes[i]->suc.end(); iter++) {
+                int s = *iter;
+                string l=nexusICDate(s,pr,nodes,D_min,D_max,H_min,H_max);
+                if (iter==nodes[i]->suc.begin()) newLabel+=l;
+                else newLabel+=","+l;
+            }
+            if (i>0) {
+                if (myabs(nodes[i]->B)>toCollapse) return newLabel+")"+nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"]:"+b.str();
+                else return newLabel+")"+nodes[i]->L+":"+b.str();
+            }
+            else{
+                return newLabel+")"+nodes[i]->L+"[&date="+date.str()+",CI_height={"+hmin.str()+","+hmax.str()+"}][&CI_date=\""+date.str()+"("+dmin.str()+","+dmax.str()+")\"];\n";
             }
             
         }
@@ -1764,3 +1827,49 @@ void assignRateGroupToTree(Pr* pr,Node** nodes){
         pr->multiplierRate[0]=-1;//Full partition
     }
 }
+
+void calculate_tree_height(Pr* pr,Node** & nodes){
+    if (pr->ratePartition.size()==0){
+        for (int i=1;i<=pr->nbBranches;i++){
+            nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
+        }
+    }
+    else {
+        for (int i=1;i<=pr->nbBranches;i++){
+            int g = nodes[i]->rateGroup;
+            if (g==0) {
+                nodes[i]->B=pr->rho*(nodes[i]->D-nodes[nodes[i]->P]->D);
+            }
+            else{
+                nodes[i]->B=pr->rho*pr->multiplierRate[g]*(nodes[i]->D-nodes[nodes[i]->P]->D);
+            }
+        }
+    }
+    list<int> pre = preorder_polytomy(pr,nodes);
+    for (list<int>::iterator iter = pre.begin();iter!=pre.end();iter++){
+        int i = *iter;
+        if (i==0){
+          nodes[i]->H = 0;
+        } else{
+            int P = nodes[i]->P;
+            nodes[i]->H = nodes[P]->H + nodes[i]->B;
+        }
+    }
+    double maxH =0;
+    double maxHD = 0;
+    for (int i = pr->nbINodes; i <= pr->nbBranches; i++){
+        int P = nodes[i]->P;
+        nodes[i]->H = nodes[P]->H + nodes[i]->B;
+        if (nodes[i]->H > maxH){
+            maxH = nodes[i]->H;
+        }
+        if (nodes[i]->D > maxHD){
+            maxHD = nodes[i]->D;
+        }
+    }
+    for (int i=0; i<=pr->nbBranches;i++){
+        nodes[i]->H = maxH - nodes[i]->H;
+        nodes[i]->HD = maxHD - nodes[i]->D;
+    }
+}
+
