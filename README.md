@@ -114,9 +114,7 @@ Note that if the internal nodes don't have labels, then they can be defined by m
 
     `./lsd -i rootedtree_file -d date_file -c -v 1`
 
-* for rooted tree, constrained mode, using variances, using partition file 
-
-(sequence length is required via option -s to calculate variances)
+* for rooted tree, constrained mode, using variances, using partition file (sequence length is required via option -s to calculate variances)
 
     `./lsd -i rootedtree_file -d date_file -c -v 1 -s 500 -p parition_file`
 
@@ -124,10 +122,7 @@ Note that if the internal nodes don't have labels, then they can be defined by m
 
     `./lsd -i rootedtree_file -d date_file -c -r l`
 
-* similar to the previous example, but calculate confidence intervals from 100 simulated trees 
-
-(sequence length is required via option -s to calculate confidence intervals. The program
-will use the min of sequence length and 1000 to generate branch lengths of simulated trees.)
+* similar to the previous example, but calculate confidence intervals from 100 simulated trees (sequence length is required via option -s to calculate confidence intervals. The program will use the min of sequence length and 1000 to generate branch lengths of simulated trees.)
 
     `./lsd -i rootedtree_file -d date_file -c -r l -f 100 -s 1700`
 
