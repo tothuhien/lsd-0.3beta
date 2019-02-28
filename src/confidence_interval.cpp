@@ -129,10 +129,11 @@ void computeIC(double br,Pr* pr,Node** nodes,double* &T_left,double* &T_right,do
             minB=nodesReduced[i]->B;
         }
     }
+    int seqLength_forIC = min(pr->seqLength,1000);
     for (int i=1;i<=prReduced->nbBranches;i++){
-        std::poisson_distribution<int> distribution(nodesReduced[i]->B*pr->seqLength);
+        std::poisson_distribution<int> distribution(nodesReduced[i]->B*seqLength_forIC);
         for (int j=0;j<pr->nbSampling;j++){
-            B_simul[j][i]=(double)distribution(generator)/(pr->seqLength);
+            B_simul[j][i]=(double)distribution(generator)/(seqLength_forIC);
         }
     }
     double maxD = nodesReduced[prReduced->nbINodes]->D; // the most recent tip date
